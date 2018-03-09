@@ -1,0 +1,19 @@
+{
+  "name": "distance_learning_daiict",
+  "version": "1.0.0",
+  "description": "A distance learning program for DA-IICT.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mr-Acharya/distance_learning_daiict.git"
+  },
+  "author": "Dhruv Acharya",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mr-Acharya/distance_learning_daiict/issues"
+  },
+  "homepage": "https://github.com/Mr-Acharya/distance_learning_daiict#readme"
+}
