@@ -10,10 +10,16 @@
     "type": "git",
     "url": "git+https://github.com/Mr-Acharya/distance_learning_daiict.git"
   },
-  "author": "Dhruv Acharya",
+  "author": "Dhruv  Acharya",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Mr-Acharya/distance_learning_daiict/issues"
   },
-  "homepage": "https://github.com/Mr-Acharya/distance_learning_daiict#readme"
+  "homepage": "https://github.com/Mr-Acharya/distance_learning_daiict#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.9",
+    "morgan": "^1.9.0"
+  }
 }
