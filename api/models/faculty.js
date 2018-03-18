@@ -8,7 +8,8 @@ const facultySchema = mongoose.Schema({
     faculty_email: String,
     faculty_password: String,
     faculty_contact_number: Number,
-    faculty_educational_details: String
+    faculty_educational_details: String,
+    faculty_area_interest: String
 });
 
 module.exports =  mongoose.model('Faculty', facultySchema);
