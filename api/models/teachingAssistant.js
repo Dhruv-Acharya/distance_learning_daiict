@@ -5,7 +5,12 @@ const TASchema = mongoose.Schema({
     TA_id: Number,
     TA_name: String,
     TA_photo: String,
-    TA_email: String,
+    TA_email: {
+        type: String,
+        required:true,
+        unique:true,
+        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
+    },
     TA_password: String,
     TA_contact_number: Number,
     TA_educational_details: String
