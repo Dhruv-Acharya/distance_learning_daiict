@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+var cors = require('cors')
 
 const adminRoutes = require('./api/routes/admin');
 const taRoutes = require('./api/routes/teachingAssistant/teachingAssistants');
@@ -13,16 +14,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());
 
-app.use((req, res, next)=>{
-    res.header('Access-Control-Allow-Origin','*');
-    res.header('Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-    );
-    if(res.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods','PUT, POST, GET, PATCH, DELETE');
-        return res.status(200).json({});
-    }
-});
+app.use(cors());
 
 app.use('/admin',adminRoutes);
 app.use('/ta',taRoutes);
