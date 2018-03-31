@@ -1,16 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/faculties');
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({storage: storage});
 
 const Faculty = require('../../models/faculty');
 
 
-router.post('/add',(req, res, next) =>{
+router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
+    console.log(req);
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
         faculty_id: req.body.faculty_id,
         faculty_name: req.body.faculty_name,
-        faculty_photo: req.body.faculty_photo,
+        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
         faculty_email: req.body.faculty_email,
         faculty_password: req.body.faculty_password,
         faculty_contact_number: req.body.faculty_contact_number,
