@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use('/admin',adminRoutes);
+app.use('/student', studentRoutes);
 app.use('/ta',taRoutes);
 
 
