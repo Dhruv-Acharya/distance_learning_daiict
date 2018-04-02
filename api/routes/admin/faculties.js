@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -19,31 +20,85 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
+
 const Faculty = require('../../models/faculty');
 
 
 router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
-    const faculty = new Faculty({
-        _id: new mongoose.Types.ObjectId(),
-        faculty_id: req.body.faculty_id,
-        faculty_name: req.body.faculty_name,
-        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
-        faculty_email: req.body.faculty_email,
-        faculty_password: req.body.faculty_password,
-        faculty_contact_number: req.body.faculty_contact_number,
-        faculty_educational_details: req.body.faculty_educational_details,
-        faculty_area_interest: req.body.faculty_area_interest
-    });
+    Faculty.find({faculty_id: req.body.faculty_id})
+        .exec()
+        .then(user => {
+            if (user.length >= 1) {
+                return res.status(409).json({
+                    message: "User Exist!"
+                });
+            }else{
+                bcrypt.hash(req.body.faculty_password,process.env.BYCRYPT_KEY,(err, hash) =>{
+                    if(err){
+                        return res.status(500).json({
+                            error: err
+                        });
+                    }
+                    else {
+                        const faculty = new Faculty({
+                            _id: new mongoose.Types.ObjectId(),
+                            faculty_id: req.body.faculty_id,
+                            faculty_name: req.body.faculty_name,
+                            faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
+                            faculty_email: req.body.faculty_email,
+                            faculty_password: req.body.faculty_password,
+                            faculty_contact_number: req.body.faculty_contact_number,
+                            faculty_educational_details: req.body.faculty_educational_details,
+                            faculty_area_interest: req.body.faculty_area_interest
+                        });
 
-    faculty.save().then(result => {
-        res.status(201).json({
-            message: "Data Inserted Successfully!",
+                        faculty.save().then(result => {
+                            res.status(201).json({
+                                message: "Data Inserted Successfully!",
+                            });
+                        })
+                            .catch(err => res.status(500).json({
+                                message: "Something went wrong",
+                                error: err
+                            }));
+                    }
+                });
+            }
         });
-    })
-        .catch(err => res.status(500).json({
-            message: "Something went wrong",
-            error: err
-        }));
+
+
+});
+
+router.post('/login',(req, res, next) =>{
+    Faculty.find({faculty_email : req.body.faculty_email})
+        .exec()
+        .then(user =>{
+            if(user.length < 1) {
+                return res.status(401).json({
+                    message: 'Authorization Failed!'
+                });
+            }
+            bcrypt.compare(req.body.faculty_password,user[0].faculty_password,(err, result)=>{
+                if(err) {
+                    return res.status(401).json({
+                        message : 'Authorization Failed!'
+                    });
+                }
+                if(result){
+                    jwt.sign({
+                        faculty_id : user[0].faculty_id,
+                        faculty_email:user[0].faculty_email
+                    }, process.env.JWT_KEY);
+                    return res.status(200).json({
+                        message : 'Authorization Successful!'
+                    });
+                }
+                return res.status(401).json({
+                    message : 'Authorization Failed!'
+                });
+            });
+        })
+        .catch();
 });
 
 router.get('/view',(req, res, next) => {
