@@ -7,7 +7,12 @@ const storage = multer.diskStorage({
         cb(null, './uploads/faculties');
     },
     filename: function(req, file, cb){
-        cb(null, req.body.faculty_id);
+        let ext;
+        if(file.mimetype === "image/jpeg")
+            ext = '.jpg';
+        if(file.mimetype === "image/png")
+            ext = '.png';
+        cb(null, req.body.faculty_id+ext);
     }
 });
 const upload = multer({storage: storage});
@@ -16,7 +21,6 @@ const Faculty = require('../../models/faculty');
 
 
 router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
-    console.log(req);
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
         faculty_id: req.body.faculty_id,
@@ -32,7 +36,6 @@ router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
     faculty.save().then(result => {
         res.status(201).json({
             message: "Data Inserted Successfully!",
-            data: result
         });
     })
         .catch(err => res.status(500).json({
@@ -58,8 +61,8 @@ router.get('/view',(req, res, next) => {
         });
 });
 
-router.get('/view/:facultyID',(req, res, next) => {
-    const facultyID = req.params.facultyID;
+router.get('/view/:faculty_id',(req, res, next) => {
+    const facultyID = req.params.faculty_id;
     Faculty.findById(facultyID)
         .exec()
         .then(result => {
@@ -76,8 +79,8 @@ router.get('/view/:facultyID',(req, res, next) => {
         });
 });
 
-router.delete('/remove/:facultyID',(req, res, next) => {
-    const facultyID = req.params.facultyID;
+router.delete('/remove/:faculty_id',(req, res, next) => {
+    const facultyID = req.params.faculty_id;
     Faculty.remove({_id: facultyID})
         .exec()
         .then(result => {
@@ -88,8 +91,8 @@ router.delete('/remove/:facultyID',(req, res, next) => {
         });
 });
 
-router.patch('/update/:facultyID',(req, res, next) => {
-    const facultyID = req.params.facultyID;
+router.patch('/update/:faculty_id',(req, res, next) => {
+    const facultyID = req.params.faculty_id;
     Faculty.update({_id: facultyID},{$set: {faculty_id: req.body.faculty_id,
             faculty_name: req.body.faculty_name,
             faculty_photo: req.body.faculty_photo,
