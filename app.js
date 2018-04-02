@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());
 
 app.use('/admin',adminRoutes);
+app.use('/student', studentRoutes);
 
 module.exports = app;
 

@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 const Faculty = require('../../models/faculty');
 
-
 router.post('/add',(req, res, next) =>{
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
@@ -47,7 +46,7 @@ router.get('/view',(req, res, next) => {
         });
 });
 
-router.get('/view/:facultyID',(req, res, next) => {
+router.get('/view/0:facultyID',(req, res, next) => {
     const facultyID = req.params.facultyID;
     Faculty.findById(facultyID)
         .exec()
@@ -67,7 +66,7 @@ router.get('/view/:facultyID',(req, res, next) => {
 
 router.delete('/remove/:facultyID',(req, res, next) => {
     const facultyID = req.params.facultyID;
-    Faculty.remove({_id: facultyID})
+    Faculty.remove({faculty_id: facultyID})
         .exec()
         .then(result => {
             res.status(200).json(result);
@@ -79,7 +78,7 @@ router.delete('/remove/:facultyID',(req, res, next) => {
 
 router.patch('/update/:facultyID',(req, res, next) => {
     const facultyID = req.params.facultyID;
-    Faculty.update({_id: facultyID},{$set: {faculty_id: req.body.faculty_id,
+    Faculty.update({faculty_id: facultyID},{$set: {
             faculty_name: req.body.faculty_name,
             faculty_photo: req.body.faculty_photo,
             faculty_email: req.body.faculty_email,
