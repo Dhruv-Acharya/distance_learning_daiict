@@ -1,0 +1,7 @@
+{
+  "env":{
+    "JWT_KEY":"secret",
+    "BASE_URL": "https://sheltered-spire-10162.herokuapp.com/"
+  }
+
+}
