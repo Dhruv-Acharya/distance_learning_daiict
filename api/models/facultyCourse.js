@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
-const courseSchema = mongoose.Schema({
-_id: mongoose.Schema.ObjectId,
-course_ID: mongoose.Schema.ObjectId,
-faculty_ID: mongoose.Schema.ObjectId,
-facultyCourse_Duration:Number,
-facultyCourse_Description:String,
-facultyCourse_Assignments:String
+const facultyCourseSchema = mongoose.Schema({
+    _id: mongoose.Schema.ObjectId,
+    FC_id : Number,
+    course_id : Number,
+    faculty_id : Number,
+    facultyCourse_duration:Number,
+    facultyCourse_description:String,
+    facultyCourse_subtopics:[Number]
 });
 
 module.exports =  mongoose.model('FacultyCourse', facultyCourseSchema);

@@ -19,7 +19,6 @@ router.post('/signup',(req, res, next) =>{
                     message: 'Email already exists, try different email'
                 });
             }else{
-                
                 bcrypt.hash(req.body.Student_Password,10,(err,hashed_pass)=> {
                     if(err) {
                         return res.status(500).json({
