@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const complaintSchema = mongoose.Schema({
     _id : mongoose.Schema.ObjectId,
-    complaint_id : Number,
     complaint_title : String,
     complaint_description : String,
     student_id : Number,
