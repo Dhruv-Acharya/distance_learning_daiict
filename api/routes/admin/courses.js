@@ -19,14 +19,14 @@ Course.find().exec().then(function (data){
 });
 
 router.post('/add', function(req,res,next){
-Course.save(req.body).exec().then(function(data){
-res.status(201).json(data);
+Course.save(req.body).exec().then(response =>{
+res.status(201).json(response);
 
-}).catch(function(err){
+}).catch(err=>{
     res.status(500).json({
         message:"Something went wrong",
         error:err
-});
+        });
     });
 });
 

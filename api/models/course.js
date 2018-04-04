@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const courseSchema = mongoose.Schema({
-    Course_ID:Number,
-    Course_Subject:String
+    _id: mongoose.Schema.ObjectId,
+    course_ID:Number,
+    course_Subject:String
 });
 
 module.exports =  mongoose.model('Course', courseSchema);
