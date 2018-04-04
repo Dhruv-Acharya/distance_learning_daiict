@@ -1,13 +1,17 @@
 const mongoose = require('mongoose');
+const subtopic = require('subtopic');
 
 const facultyCourseSchema = mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
-    FC_id : Number,
-    course_id : Number,
-    faculty_id : Number,
-    facultyCourse_duration:Number,
-    facultyCourse_description:String,
-    facultyCourse_subtopics:[Number]
+    course_id : mongoose.Schema.ObjectId,
+    faculty_id : mongoose.Schema.ObjectId,
+    facultyCourse_duration : Number,
+    facultyCourse_description : String,
+    facultyCourse_image : String,
+    facultyCourse_ta_require : Boolean,
+    facultyCourse_ta_list : [Number],
+    facultyCourse_prerequisites : String,
+    facultyCourse_subtopics:[subtopic]
 });
 
 module.exports =  mongoose.model('FacultyCourse', facultyCourseSchema);
