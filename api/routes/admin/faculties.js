@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
 const checkAuth = require('./../../middleware/check-auth');
+const bcrypt = require('bcrypt');
 require('./../../../env');
 
 const storage = multer.diskStorage({
