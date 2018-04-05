@@ -10,7 +10,11 @@ const storage = multer.diskStorage({
         cb(null, './uploads/faculties');
     },
     filename: function(req, file, cb){
-        cb(null, req.body.faculty_id);
+        let type;
+        if(file.mimetype === "image/jpeg") {
+            type = ".jpg";
+        }
+        cb(null, req.body.faculty_id+type);
     }
 });
 const upload = multer({storage: storage});
