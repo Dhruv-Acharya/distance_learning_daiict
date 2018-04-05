@@ -51,7 +51,7 @@ router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
 });
 });
 
-router.get('/view',checkAuth(), (req, res, next) => {
+router.get('/view', (req, res, next) => {
     Faculty.find()
         .exec()
         .then(result => {
