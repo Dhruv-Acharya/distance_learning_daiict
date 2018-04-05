@@ -3,10 +3,21 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
+const multer=require('multer');
+const storage=multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,'./Images/');
+    },
+    filename:function(req,file,cb){
+        cb(null,new Date().toISOString()+file.originalname);
+    }
+});
+const upload = multer({storage:storage});
 const Teaching_Assistant = require('../../models/teachingAssistant');
 
 // Signup
 router.post('/signup',(req, res, next) =>{
+    //console.log(req.file);
     Teaching_Assistant.find({TA_email:req.body.TA_email})
         .exec()
         .then(TA => {
@@ -111,7 +122,8 @@ router.delete('/delete/:TA_id',(req,res,next)=>{
 });
 
 // Edit Profile
-router.patch('/update/:TAID',(req, res, next) => {
+router.patch('/editprofile/:TAID',(req, res, next) => {
+
     const TAID = req.params.TAID;
     Teaching_Assistant.update({_id: TAID},{$set: {TA_id: req.body.TA_id,
         TA_name: req.body.TA_name,
