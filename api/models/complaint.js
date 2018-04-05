@@ -4,8 +4,8 @@ const complaintSchema = mongoose.Schema({
     _id : mongoose.Schema.ObjectId,
     complaint_title : String,
     complaint_description : String,
-    student_id : Number,
-    FC_id : Number,
+    student_id :  mongoose.Schema.ObjectId,
+    FC_id :  mongoose.Schema.ObjectId,
     complaint_response : String
 });
 
