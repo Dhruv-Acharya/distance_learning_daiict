@@ -25,7 +25,7 @@ const Faculty = require('../../models/faculty');
 
 
 router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
-    bcrypt.hash(req.body.faculty_password, process.env.BYCRYPT_KEY,(err,hash)=> {
+    bcrypt.hash(req.body.faculty_password, 10,(err,hash)=> {
     if(err) {
     res.status(500).json(err);
       } 
