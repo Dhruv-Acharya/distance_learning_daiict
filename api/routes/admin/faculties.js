@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 const Faculty = require('../../models/faculty');
 
-
 router.post('/add',(req, res, next) =>{
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
