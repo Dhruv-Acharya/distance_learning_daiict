@@ -12,7 +12,7 @@ const facultySchema = mongoose.Schema({
     },
     faculty_password: {type : String, required: true},
     faculty_contact_number:{
-        type: number,
+        type: Number,
         required:true,
         match: /^[0-9]*$/
     },
