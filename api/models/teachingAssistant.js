@@ -12,7 +12,7 @@ const TASchema = mongoose.Schema({
     },
     TA_password: String,
     TA_contact_number: {
-        type: number,
+        type: Number,
         required:true,
         match: /^[0-9]*$/
     },
