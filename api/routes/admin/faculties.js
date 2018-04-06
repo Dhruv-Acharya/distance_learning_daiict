@@ -25,38 +25,42 @@ const Faculty = require('../../models/faculty');
 
 
 
-router.post('/add',(req, res, next) =>{
+router.post('/add',(req, res, next) => {
 
 
-router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
-    bcrypt.hash(req.body.faculty_password, 10,(err,hash)=> {
-    if(err) {
-    res.status(500).json(err);
-      } 
-    else{
+    router.post('/add', upload.single('faculty_photo'), (req, res, next) => {
+        bcrypt.hash(req.body.faculty_password, 10, (err, hash) => {
+            if (err) {
+                res.status(500).json(err);
+            }
+            else {
 
-    const faculty = new Faculty({
-        _id: new mongoose.Types.ObjectId(),
-        faculty_id: req.body.faculty_id,
-        faculty_name: req.body.faculty_name,
-        faculty_photo: req.body.faculty_photo,
-        faculty_email: req.body.faculty_email,
-        faculty_password: req.body.faculty_password,
-        faculty_contact_number: req.body.faculty_contact_number,
-        faculty_educational_details: req.body.faculty_educational_details,
-        faculty_area_interest: req.body.faculty_area_interest
-    });
+                const faculty = new Faculty({
+                    _id: new mongoose.Types.ObjectId(),
+                    faculty_id: req.body.faculty_id,
+                    faculty_name: req.body.faculty_name,
+                    faculty_photo: req.body.faculty_photo,
+                    faculty_email: req.body.faculty_email,
+                    faculty_password: req.body.faculty_password,
+                    faculty_contact_number: req.body.faculty_contact_number,
+                    faculty_educational_details: req.body.faculty_educational_details,
+                    faculty_area_interest: req.body.faculty_area_interest
+                });
 
-    faculty.save().then(result => {
-        res.status(201).json({
-            message: "Data Inserted Successfully!",
-            data: result
-        });
+                faculty.save().then(result => {
+                    res.status(201).json({
+                        message: "Data Inserted Successfully!",
+                        data: result
+                    });
+                })
+                    .catch(err => res.status(500).json({
+                        message: "Something went wrong",
+                        error: err
+                    }));
+            }
+        })
     })
-        .catch(err => res.status(500).json({
-            message: "Something went wrong",
-            error: err
-        }));
+
 });
 
 router.get('/view', (req, res, next) => {
