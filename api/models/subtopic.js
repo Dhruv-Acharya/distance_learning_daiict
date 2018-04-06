@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 const subtopicSchema = mongoose.Schema({
     _id : mongoose.Schema.ObjectId,
-    subtopic_name : String,
+    subtopic_name : {
+        type: String,
+        required:true,
+    },
     subtopic_assignment : String,
     subtopic_video : String,
     subtopic_description : String,
