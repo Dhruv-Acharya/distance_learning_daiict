@@ -11,7 +11,11 @@ const TASchema = mongoose.Schema({
         match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
     },
     TA_password: String,
-    TA_contact_number: Number,
+    TA_contact_number: {
+        type: number,
+        required:true,
+        match: /^[0-9]*$/
+    },
     TA_educational_details: String
 });
 
