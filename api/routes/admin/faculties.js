@@ -11,11 +11,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/faculties');
     },
     filename: function(req, file, cb){
-        let type;
-        if(file.mimetype === "image/jpeg") {
-            type = ".jpg";
-        }
-        cb(null, req.body.faculty_id+type);
+        cb(null, file.originalname);
     }
 });
 const upload = multer({storage: storage});
@@ -25,6 +21,7 @@ const Faculty = require('../../models/faculty');
 
 
 router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
+    console.log(req);
     bcrypt.hash(req.body.faculty_password, 10,(err,hash)=> {
     if(err) {
     res.status(500).json(err);
@@ -32,7 +29,6 @@ router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
     else{
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
-        faculty_id: req.body.faculty_id,
         faculty_name: req.body.faculty_name,
         faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
         faculty_email: req.body.faculty_email,
@@ -57,7 +53,7 @@ router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
 });
 });
 
-router.get('/view', (req, res, next) => {
+router.get('/view', checkAuth, (req, res, next) => {
     Faculty.find()
         .exec()
         .then(result => {

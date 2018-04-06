@@ -1,4 +1,4 @@
-/*const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
     try {
@@ -7,8 +7,9 @@ module.exports = (req, res, next) => {
         req.userData = decoded;
         next();
     } catch (error) {
-        return res.status(401).json({
-            message: 'Auth failed'
+        res.status(401).json({
+            err : error
         });
+        return res;
     }
-};*/
+};

@@ -20,13 +20,11 @@ Course.find().exec().then(response=>{
 router.post('/add', function(req,res,next){
     const course = new Course({
         _id : new mongoose.Types.ObjectId(),
-        course_id : req.body.course_id,
-        course_subject : req.body.course.subject
+        course_subject : req.body.course_subject
     });
 course.save().exec().then(result =>{
 res.status(201).json({
     message : "Data inserted successfully",
-    result : result
         });
     }).catch(err=>{
     res.status(500).json({
