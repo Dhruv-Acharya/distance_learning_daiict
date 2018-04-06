@@ -2,10 +2,39 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
+const multer = require('multer');
+const checkAuth = require('./../../middleware/check-auth');
+const bcrypt = require('bcrypt');
+require('./../../../env');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/faculties');
+    },
+    filename: function(req, file, cb){
+        let type;
+        if(file.mimetype === "image/jpeg") {
+            type = ".jpg";
+        }
+        cb(null, req.body.faculty_id+type);
+    }
+});
+const upload = multer({storage: storage});
+
 const Faculty = require('../../models/faculty');
 
 
+
 router.post('/add',(req, res, next) =>{
+
+
+router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
+    bcrypt.hash(req.body.faculty_password, 10,(err,hash)=> {
+    if(err) {
+    res.status(500).json(err);
+      } 
+    else{
+
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
         faculty_id: req.body.faculty_id,
@@ -30,7 +59,7 @@ router.post('/add',(req, res, next) =>{
         }));
 });
 
-router.get('/view',(req, res, next) => {
+router.get('/view', (req, res, next) => {
     Faculty.find()
         .exec()
         .then(result => {

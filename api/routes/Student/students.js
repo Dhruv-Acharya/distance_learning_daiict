@@ -16,9 +16,9 @@ const upload = multer({storage:storage});
 const Student = require('../../models/student');
 
 // Signup
-router.post('/signup',(req, res, next) =>{
+router.post('/signup',upload.single(),(req, res, next) =>{
     //console.log(req.file);
-    Student.find({Student_email:req.body.Student_email})
+    Student.find({student_email:req.body.student_email})
         .exec()
         .then(std => {
             if(std.length>=1){
@@ -26,7 +26,7 @@ router.post('/signup',(req, res, next) =>{
                     message: 'Email already existed, try different email'
                 });
             }else{
-                bcrypt.hash(req.body.Student_password,10,(err,hash)=> {
+                bcrypt.hash(req.body.student_password,10,(err,hash)=> {
                     if(err) {
                         return res.status(500).json({
                             error:err
@@ -34,8 +34,8 @@ router.post('/signup',(req, res, next) =>{
                     }else{
                         const std= new Student({
                             _id:new mongoose.Types.ObjectId(),
-                            Student_email:req.body.Student_email,
-                            Student_password: hash
+                            student_email:req.body.student_email,
+                            student_password: hash
                         });
                         std.save()
                             .then(result=>{
@@ -60,7 +60,7 @@ router.post('/signup',(req, res, next) =>{
 
 // Login
 router.post('/login',(req,res,next)=>{
-    Student.find({Student_email:req.body.Student_email})
+    Student.find({student_email:req.body.student_email})
         .exec()
         .then(std => {
             if(std.length<1){
@@ -68,7 +68,7 @@ router.post('/login',(req,res,next)=>{
                     message: 'Email doesn\'t exist, please enter valid email'
                 });
             }
-            bcrypt.compare(req.body.Student_password,TA[0].Student_password,(err,result)=>{
+            bcrypt.compare(req.body.student_password,std[0].student_password,(err,result)=>{
                 if(err) {
                     return res.status(401).json({
                         message: 'Email or password incorrect'
@@ -77,8 +77,8 @@ router.post('/login',(req,res,next)=>{
                 if(result){
                     const token = jwt.sign(
                         {
-                            Student_email:std[0].Student_email,
-                            Student_id:std[0]._id
+                            student_email:std[0].student_email,
+                            student_id:std[0]._id
                         },
                         "secret",
                         {
@@ -105,8 +105,8 @@ router.post('/login',(req,res,next)=>{
 });
 
 // Delete
-router.delete('/delete/:TA_id',(req,res,next)=>{
-    Student.remove({_id:req.params.Student_id})
+router.delete('/delete/:Student_id',(req,res,next)=>{
+    Student.remove({_id:req.params.student_id})
         .exec()
         .then(result=>{
             res.status(200).json({
@@ -125,21 +125,21 @@ router.delete('/delete/:TA_id',(req,res,next)=>{
 router.patch('/editprofile/:StudentID',(req, res, next) => {
 
     const StudentID = req.params.StudentID;
-    Student.update({_id: StudentID},{$set: {Student_id: req.body.Student_id,
-        Student_name: req.body.Student_name,
-        Student_photo: req.body.Student_photo,
-        Student_email: req.body.Student_email,
-        Student_password: req.body.Student_password,
-        Student_contact_number: req.body.Student_contact_number,
-        Student_occupation: req.body.Student_occupation,
-        Student_industry: req.body.Student_industry,
-        Student_collage_name: req.body.Student_collage_name,
-        Student_experience_level: req.body.Student_experience_level,
-        Student_gender: req.body.Student_gender,
-        Student_birthdate: req.body.Student_birthdate,
-        Student_Address: req.body.Student_Address,
-        Student_topSkills: req.body.Student_topSkills,
-        Student_educational_details: req.body.Student_educational_details
+    Student.update({_id: StudentID},{$set: {student_id: req.body.student_id,
+        student_name: req.body.student_name,
+        student_photo: req.body.student_photo,
+        student_email: req.body.student_email,
+        student_password: req.body.student_password,
+        student_contact_number: req.body.student_contact_number,
+        student_educational_details: req.body.student_educational_details,
+        student_occupation: req.body.student_occupation,
+        student_industry: req.body.student_industry,
+        student_collage: req.body.student_collage,
+        student_experience_level: req.body.student_experience_level,
+        student_gender: req.body.student_gender,
+        Student_birthdate: req.body.student_birthdate,
+        student_Address: req.body.student_Address,
+        student_topSkills: req.body.student_topSkills
     } })
         .exec()
         .then(result=>{

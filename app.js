@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
 //require('dotenv').config();
+
+require('./env');
+
 
 const adminRoutes = require('./api/routes/admin');
 const taRoutes = require('./api/routes/teachingAssistant/teachingAssistants');
