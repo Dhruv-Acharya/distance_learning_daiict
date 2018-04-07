@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/faculties');
     },
     filename: function(req, file, cb){
-        cb(null, req.body.faculty_id);
+        cb(null, "examplefile");
     }
 });
 const upload = multer({storage: storage});
@@ -17,18 +18,22 @@ const Faculty = require('../../models/faculty');
 
 
 router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
-    bcrypt.hash(req.body.faculty_Password, process.env.BYCRYPT_KEY,(err,hash)=> {
-    if(err) {
-    res.status(500).json(err);
-      } 
-    else{
+console.log("/add on admin/faculties");
+console.log(req.body);
+console.log(req.files);
+    //bcrypt.hash(req.body.faculty_Password, 10,(err,hash)=> {
+    //if(err) {
+    //res.status(500).json({
+      //  msg : "Got it"
+   // });
+     // } 
+    //else{
     const faculty = new Faculty({
         _id: new mongoose.Types.ObjectId(),
-        faculty_id: req.body.faculty_id,
         faculty_name: req.body.faculty_name,
-        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
+        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.body.image,
         faculty_email: req.body.faculty_email,
-        faculty_password: hash,
+        faculty_password: req.body.faculty_password,
         faculty_contact_number: req.body.faculty_contact_number,
         faculty_educational_details: req.body.faculty_educational_details,
         faculty_area_interest: req.body.faculty_area_interest
@@ -40,14 +45,12 @@ router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
             data: result
         });
     })
-        .catch(err => res.status(500).json({
-            message: "Something went wrong",
+        .catch(err => {res.status(500).json({
             error: err
-        }));
+        });
+    });
 
-    }
-});
-});
+    });
 
 router.get('/view',(req, res, next) => {
     Faculty.find()
@@ -66,9 +69,9 @@ router.get('/view',(req, res, next) => {
         });
 });
 
-router.get('/view/:facultyID',(req, res, next) => {
-    const facultyID = req.params.facultyID;
-    Faculty.find({faculty_ID:facultyID})
+router.get('/view/:_id',(req, res, next) => {
+    console.log("request on view/facid");
+    Faculty.find({_id : req.params._id})
         .exec()
         .then(result => {
             if(result.length >= 0){
@@ -96,7 +99,7 @@ router.delete('/remove/:facultyID',(req, res, next) => {
         });
 });
 
-router.patch('/update/:facultyID',(req, res, next) => {
+router.patch('/update/:facultyID', upload.single('faculty_photo'),(req, res, next) => {
     bcrypt.hash(req.body.faculty_Password,10,(err,hash)=>{
         if(err)
         {
@@ -107,7 +110,7 @@ router.patch('/update/:facultyID',(req, res, next) => {
             const facultyID = req.params.facultyID;
             Faculty.update({faculty_id: facultyID},{$set: {
                     faculty_name: req.body.faculty_name,
-                    faculty_photo: req.body.faculty_photo,
+                    faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
                     faculty_email: req.body.faculty_email,
                     faculty_password: hash,
                     faculty_contact_number: req.body.faculty_contact_number,
