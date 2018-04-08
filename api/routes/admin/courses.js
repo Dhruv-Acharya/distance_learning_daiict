@@ -22,7 +22,7 @@ router.post('/add', function(req,res,next){
         _id : new mongoose.Types.ObjectId(),
         course_subject : req.body.course_subject
     });
-course.save().exec().then(result =>{
+course.save().then(result =>{
 res.status(201).json({
     message : "Data inserted successfully",
         });

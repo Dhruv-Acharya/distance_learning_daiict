@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Complaint = require('../../models/complaint');
 
 router.get('/view', function(req,res,next){
-    Complaints.find({})
+    Complaint.find({})
     .exec()
     .then(result=>{
       

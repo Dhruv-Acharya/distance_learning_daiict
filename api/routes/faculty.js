@@ -5,15 +5,44 @@ const Faculty = require('../models/faculty');
 const faculty= require('../../models/faculty');
 const courseRoutes = require('./faculty/courses');
 router.use('/course',courseRoutes);
-router.use('/login',function(req,res,next){
-faculty.find({faculty_name:req.body.faculty_name,faculty_password:req.body.faculty_password}).exec().then(function(data){
-    if(!data.length){
-        res.json({login:false});
-    }
-    else res.status(200).json(data);
-}).catch(function(err){
-res.status(500).json(err);
-})
-
+router.post('/login',function(req,res,next){
+    faculty.find({faculty_email:req.body.faculty_email})
+       .exec()
+       .then(data => {
+           if(!data.length){
+               return res.status(404).json({
+                   message: 'User not found'
+               });
+           }
+           else{
+            bcrypt.compare(req.body.faculty_password,data[0].faculty_password,(err,result)=>{
+               if(err) {
+                       return res.status(401).json({
+                            message: 'Invalid email or password'
+                        });
+                   }
+                   if(result){
+                       const token = jwt.sign(
+                           {
+                               faculty_email:data[0].faculty_email,
+                           },
+                           "nevermind",
+                           {
+                               expiresIn:'1h'
+                           }
+                       );
+                       return  res.status(200).json({
+                           message:'Login successful',
+                           token:token
+                       });
+                   }
+               });
+           }
+       }).catch(err=>{
+           console.log(err);
+           res.status(500).json({
+               error:err
+           });
+        });
 });
 module.exports = router;

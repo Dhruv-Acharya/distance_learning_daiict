@@ -61,13 +61,13 @@ router.post('/add', (req, res, next) =>{
             res.status(500).json(err);
         }
         else{
-            const faculty = new Admin({
+            const admin = new Admin({
                 _id: new mongoose.Types.ObjectId(),
                 admin_email: req.body.admin_email,
                 admin_password: hash,
             });
 
-            faculty.save().then(result => {
+            admin.save().then(result => {
                 res.status(201).json({
                     message: "Data Inserted Successfully!",
                     data: result
