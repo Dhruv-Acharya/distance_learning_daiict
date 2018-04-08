@@ -25,7 +25,10 @@ const studentSchema = mongoose.Schema({
     student_gender: String,
     student_birthdate:String,
     student_Address:String,
-    student_topSkills: String
+    student_topSkills: String,
+    student_resetPasswordExpires:Date,
+    student_resetPasswordToken:String
+
 });
 
 module.exports =  mongoose.model('Student', studentSchema);
