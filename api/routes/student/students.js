@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 const multer=require('multer');
+const async=require('async');
+const nodemailer=require('nodemailer');
+const crypto=require('crypto');
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/students');
@@ -13,9 +17,10 @@ const storage = multer.diskStorage({
         if(file.mimetype === "image/jpeg") {
             type = ".jpg";
         }
-        cb(null, req.body.faculty_id+type);
+        cb(null, req.body.student_id+type);
     }
 });
+
 const upload = multer({storage:storage});
 const Student = require('../../models/student');
 
@@ -106,6 +111,65 @@ router.post('/login',(req,res,next)=>{
                 error:err
             });
         });
+});
+
+// Logout
+router.get('/logout',(req,res,next)=>{
+   req.logout();
+   req.flash("Sucess","See you later!");
+   req.redirect('/login');
+});
+
+// Forgot Password
+router.post('/forgotpassword',function(req,res,next){
+   async.waterfall([
+       function(done){
+            crypto.randomBytes(20,function(err,buf){
+               var token = buf.toString('hex');
+               done(err,token);
+            });
+       },
+       function(token,done){
+           Student.findOne({student_email:req.body.student_email},function(err,user){
+              if(!Student){
+                  req.flash('Error','No account with that email address exists');
+                  return res.redirect('/forgotpassword');
+              }
+              Student.student_resetPasswordToken=token;
+              Student.student_resetPasswordExpires=Date.now()+3600000;
+
+              Student.save(function(err){
+                  done(err,token,user);
+              });
+           });
+       },
+       function(token,user,done){
+           var smtpTransport=nodemailer.createTransport({
+               service:'Gmail',
+               auth:{
+                   user:'team11novice@gmail.com',
+                   pass:process.env.GMAILPW
+               }
+           });
+           var mailOptions={
+               to: user.student_email,
+               from: 'no-reply@gmail.com',
+               subject: 'Node.js Password Reset',
+               text: 'You are receiving this because you have requested the reset  os the password'+
+                      'Please click on the following link, or paste this into your browser to complete the process'+
+                      'http://'+req.headers.host+'/reset/'+token+'\n\n'+
+                      'If you did not request this, please ignore this email and your password will remail unchanged'
+           };
+           smtpTransport.sendMail(mailOptions,function(err){
+              console.log('Mail Sent');
+              req.flash('Success','An email has been set to '+user.student_email+ ' with further instructions.');
+              done(err,'done');
+           });
+       }
+   ],function(err){
+       if(err) return next(err);
+       res.redirect('/forgotpassword');
+   });
 });
 
 // Delete
