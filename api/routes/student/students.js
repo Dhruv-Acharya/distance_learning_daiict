@@ -4,19 +4,23 @@ const mongoose = require('mongoose');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 const multer=require('multer');
-const storage=multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,'./Images/');
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/students');
     },
-    filename:function(req,file,cb){
-        cb(null,new Date().toISOString()+file.originalname);
+    filename: function(req, file, cb){
+        let type;
+        if(file.mimetype === "image/jpeg") {
+            type = ".jpg";
+        }
+        cb(null, req.body.faculty_id+type);
     }
 });
 const upload = multer({storage:storage});
 const Student = require('../../models/student');
 
 // Signup
-router.post('/signup',(req, res, next) =>{
+router.post('/signup',upload.single('student_photo'),(req, res, next) =>{
     //console.log(req.file);
     Student.find({student_email:req.body.student_email})
         .exec()
