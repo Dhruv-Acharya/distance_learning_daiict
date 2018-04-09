@@ -58,7 +58,9 @@ router.post('/login',function(req,res,next){
 router.post('/add', (req, res, next) =>{
     bcrypt.hash(req.body.admin_password, process.env.BCRYPT_KEY,(err,hash)=> {
         if(err) {
-            res.status(500).json(err);
+            res.status(500).json({
+                error: err
+            });
         }
         else{
             const admin = new Admin({
