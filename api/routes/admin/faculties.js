@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
         cb(null, './uploads/faculties');
     },
     filename: function(req, file, cb){
-        cb(null, "examplefile");
+        cb(null, file.originalname);
     }
 });
 const upload = multer({storage: storage});
@@ -18,39 +18,39 @@ const Faculty = require('../../models/faculty');
 
 
 router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
-console.log("/add on admin/faculties");
-console.log(req.body);
-console.log(req.files);
-    //bcrypt.hash(req.body.faculty_Password, 10,(err,hash)=> {
-    //if(err) {
-    //res.status(500).json({
-      //  msg : "Got it"
-   // });
-     // } 
-    //else{
-    const faculty = new Faculty({
-        _id: new mongoose.Types.ObjectId(),
-        faculty_name: req.body.faculty_name,
-        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.body.image,
-        faculty_email: req.body.faculty_email,
-        faculty_password: req.body.faculty_password,
-        faculty_contact_number: req.body.faculty_contact_number,
-        faculty_educational_details: req.body.faculty_educational_details,
-        faculty_area_interest: req.body.faculty_area_interest
+    bcrypt.hash(req.body.faculty_password, 10,(err,hash)=> {
+    if(err) {
+    res.status(500).json({
+       error : err
     });
-    
-    faculty.save().then(result => {
-        res.status(201).json({
-            message: "Data Inserted Successfully!",
-            data: result
+    }
+    else {
+        const faculty = new Faculty({
+            _id: new mongoose.Types.ObjectId(),
+            faculty_name: req.body.faculty_name,
+            faculty_photo: "https://sheltered-spire-10162.herokuapp.com/" + req.file.path,
+            faculty_email: req.body.faculty_email,
+            faculty_password: hash,
+            faculty_contact_number: req.body.faculty_contact_number,
+            faculty_educational_details: req.body.faculty_educational_details,
+            faculty_area_interest: req.body.faculty_area_interest
         });
-    })
-        .catch(err => {res.status(500).json({
-            error: err
-        });
-    });
 
-    });
+        faculty.save().then(result => {
+            res.status(201).json({
+                message: "Data Inserted Successfully!",
+                data: result
+            });
+        })
+            .catch(err => {
+                res.status(500).json({
+                    error: err
+                });
+            });
+    }
+
+});
+});
 
 router.get('/view',(req, res, next) => {
     Faculty.find()
@@ -69,9 +69,9 @@ router.get('/view',(req, res, next) => {
         });
 });
 
-router.get('/view/:_id',(req, res, next) => {
+router.get('/view/:faculty_id',(req, res, next) => {
     console.log("request on view/facid");
-    Faculty.find({_id : req.params._id})
+    Faculty.find({_id : req.params.faculty_id})
         .exec()
         .then(result => {
             if(result.length >= 0){
@@ -87,9 +87,8 @@ router.get('/view/:_id',(req, res, next) => {
         });
 });
 
-router.delete('/remove/:facultyID',(req, res, next) => {
-    const facultyID = req.params.facultyID;
-    Faculty.remove({faculty_id: facultyID})
+router.delete('/remove/:faculty_id',(req, res, next) => {
+    Faculty.remove({_id: req.params._id})
         .exec()
         .then(result => {
             res.status(200).json(result);
@@ -99,18 +98,17 @@ router.delete('/remove/:facultyID',(req, res, next) => {
         });
 });
 
-router.patch('/update/:facultyID', upload.single('faculty_photo'),(req, res, next) => {
-    bcrypt.hash(req.body.faculty_Password,10,(err,hash)=>{
+router.patch('/update/:faculty_id', upload.single('faculty_photo'),(req, res, next) => {
+    bcrypt.hash(req.body.faculty_password,10,(err,hash)=>{
         if(err)
         {
             res.status(500).json(err);
         }
         else
-        {
-            const facultyID = req.params.facultyID;
-            Faculty.update({faculty_id: facultyID},{$set: {
+        { if(typeof req.file !== 'undefined'){
+            Faculty.update({_id: req.params._id},{$set: {
                     faculty_name: req.body.faculty_name,
-                    faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
+                    faculty_photo: "https://sheltered-spire-10162.herokuapp.com/" + req.file.path,
                     faculty_email: req.body.faculty_email,
                     faculty_password: hash,
                     faculty_contact_number: req.body.faculty_contact_number,
@@ -122,8 +120,24 @@ router.patch('/update/:facultyID', upload.single('faculty_photo'),(req, res, nex
                 })
                 .catch(err => {
                     res.status(500).json(err);
-                });
-        
+                });}
+                else
+                {
+                    Faculty.update({_id: req.params._id},{$set: {
+                        faculty_name: req.body.faculty_name,
+                        faculty_email: req.body.faculty_email,
+                        faculty_password: hash,
+                        faculty_contact_number: req.body.faculty_contact_number,
+                        faculty_educational_details: req.body.faculty_educational_details,
+                        faculty_area_interest: req.body.faculty_area_interest} })
+                    .exec()
+                    .then(result => {
+                            res.status(200).json(result);
+                    })
+                    .catch(err => {
+                        res.status(500).json(err);
+                    });
+                }
         }
     });
 });

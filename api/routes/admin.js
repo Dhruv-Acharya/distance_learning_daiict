@@ -8,10 +8,12 @@ const jwt = require('jsonwebtoken');
 const facultyRoutes = require('./admin/faculties');
 const studentRoutes = require('./admin/students');
 const courseRoutes = require('./admin/courses');
+const inquiryRouters = require('./admin/inquiries');
 
 router.use('/faculty',facultyRoutes);
 router.use('/student',studentRoutes);
 router.use('/course',courseRoutes);
+router.use('/inquiry',inquiryRouters);
 
 router.post('/login',function(req,res,next){
     Admin.find({admin_email:req.body.admin_email})

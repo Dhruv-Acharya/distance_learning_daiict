@@ -25,7 +25,6 @@ router.post('/add', function(req,res,next){
 course.save().then(result =>{
 res.status(201).json({
     message : "Data inserted successfully",
-    result : result
         });
     }).catch(err=>{
     res.status(500).json({
@@ -36,7 +35,7 @@ res.status(201).json({
 });
 
 router.delete('/remove/:course_id', function(req,res,next){
-Course.remove({course_id:req.params.course_id}).exec().then(result=>{
+Course.remove({_id:req.params.course_id}).exec().then(result=>{
     res.status(200).json(result);
 }).catch(err=>{
     res.status(500).json({
@@ -47,8 +46,7 @@ Course.remove({course_id:req.params.course_id}).exec().then(result=>{
 });
 
 router.patch('/update/:course_id', function(req,res,next){
-    const courseID = req.params.course_id;
-    Course.update({course_id: courseID},{$set: {
+    Course.update({_id: req.params.course_id},{$set: {
         course_id : req.body.course_id,
         course_subject : req.body.course_subject} })
         .exec()

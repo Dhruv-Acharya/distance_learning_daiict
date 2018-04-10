@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Inquiry = require('../../models/inquiry');
 
 router.get('/view', function(req,res,next){
-    Inquiry.find({})
+    Inquiry.find()
     .exec()
     .then(result=>{
       
@@ -20,7 +20,7 @@ router.get('/view', function(req,res,next){
 });
 
 router.patch('respond/:inquiry_id', function(req,res,next){
-        Inquiry.update({inquiry_id : req.params.inquiry_id}, {$set : {
+        Inquiry.update({_id : req.params.inquiry_id}, {$set : {
             inquiry_response : req.body.inquiry_response
         }
         

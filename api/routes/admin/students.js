@@ -5,7 +5,7 @@ const Student = require('../../models/student');
 
 
 router.get('/view', function(req,res,next){
-    Student.find({})
+    Student.find()
     .exec()
     .then(result=>{
       

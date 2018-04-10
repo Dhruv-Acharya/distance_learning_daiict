@@ -74,7 +74,7 @@ i+=2;
       });
     });
 
-router.patch('/update/:courseID', function(req,res,next){
+router.patch('/update/:course_id', function(req,res,next){
     FacultyCourse.update({_id: req.params.course_id},{$set: {
     FacultyCourse_Duration:req.body.FacultyCourse_Duration,
     FacultyCourse_Description:req.body.FacultyCourse_Description,
@@ -92,9 +92,8 @@ router.patch('/update/:courseID', function(req,res,next){
         });
     
     });
-router.delete('/delete/:courseID', function(req,res,next){
-    const courseID = req.params.courseID;
-    FacultyCourse.remove({Course_Id: courseID})
+router.delete('/delete/:course_id', function(req,res,next){
+    FacultyCourse.remove({_id: req.params.course_id})
         .exec()
         .then(result => {
             res.status(200).json(result);

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Complaint = require('../../models/complaint');
 
 router.get('/view', function(req,res,next){
-    Complaint.find({})
+    Complaint.find()
     .exec()
     .then(result=>{
       
@@ -20,7 +20,7 @@ router.get('/view', function(req,res,next){
 });
 
 router.patch('respond/:complaint_id', function(req,res,next){
-Complaint.update({complaint_id : req.params.complaint_id}, {$set : {
+Complaint.update({_id : req.params.complaint_id}, {$set : {
     complaint_response : req.body.complaint_response
 }
 

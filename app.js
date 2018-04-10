@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config()
+require('./env');
 
 const adminRoutes = require('./api/routes/admin');
 const taRoutes = require('./api/routes/teachingAssistant/teachingAssistants');
@@ -17,7 +17,20 @@ app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());
 
 app.use(cors());
-
+/*app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        return res.status(200).json({});
+    }
+    next();
+  });*/
+ // include before other routes
+  app.options('/admin', cors()); 
 app.use('/admin',adminRoutes);
 //app.use('/student', studentRoutes);
 app.use('/ta',taRoutes);
