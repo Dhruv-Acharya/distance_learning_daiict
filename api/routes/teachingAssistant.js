@@ -11,38 +11,39 @@ const crypto=require('crypto');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, './uploads/student');
+        cb(null, './uploads/teachingAssistant');
     },
     filename: function(req, file, cb){
         let type;
         if(file.mimetype === "image/jpeg") {
             type = ".jpg";
         }
-        cb(null, req.body.student_name+type);
+        cb(null, req.body.ta_name+type);
     }
 });
 
 const upload = multer({storage:storage});
-const Student = require('../../models/student');
+const Teaching_Assistant = require('../models/teachingAssistant');
 
 
-//signup
-router.post('/signup', upload.single('student_photo'), (req, res, next) => {
-    bcrypt.hash(req.body.student_password, 10, (err, hash) => {
+router.post('/signup', upload.single('ta_photo'), (req, res, next) => {
+    bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
         if (err) {
             res.status(500).json(err);
         }
         else {
-            const std = new Student({
+
+            const TA = new Teaching_Assistant({
                 _id: new mongoose.Types.ObjectId(),
-                student_name: req.body.student_name,
-                student_photo: req.file.path,
-                student_email: req.body.student_email,
-                student_password: hash,
-                student_contact_number: req.body.student_contact_number,
+                ta_name: req.body.ta_name,
+                //ta_photo: req.file.path,
+                ta_email: req.body.ta_email,
+                ta_password: hash,
+                ta_contact_number: req.body.ta_contact_number
             });
 
-            std.save().then(result => {
+
+            TA.save().then(result => {
                 res.status(201).json({
                     message: "Data Inserted Successfully!",
                     data: result
@@ -55,18 +56,53 @@ router.post('/signup', upload.single('student_photo'), (req, res, next) => {
         }
     })
 });
+/*
+// Signup
+router.post('/signup',(req, res, next) => {
+    router.post('/signup', upload.single('ta_photo'), (req, res, next) => {
+        bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
+            if (err) {
+                res.status(500).json(err);
+            }
+            else {
 
+                const TA = new Teaching_Assistant({
+                    _id: new mongoose.Types.ObjectId(),
+                    ta_id: req.body.ta_id,
+                    ta_name: req.body.ta_name,
+                    ta_photo: req.body.ta_photo,
+                    ta_email: req.body.ta_email,
+                    ta_password: req.body.ta_password,
+                    ta_contact_number: req.body.ta_contact_number,
+                });
+
+                TA.save().then(result => {
+                    res.status(201).json({
+                        message: "Data Inserted Successfully!",
+                        data: result
+                    });
+                })
+                    .catch(err => res.status(500).json({
+                        message: "Something went wrong",
+                        error: err
+                    }));
+            }
+        })
+    })
+
+});
+*/
 // Login
 router.post('/login',(req,res,next)=>{
-    Student.find({student_email:req.body.student_email})
+    Teaching_Assistant.find({ta_email:req.body.ta_email})
         .exec()
-        .then(std => {
-            if(std.length<1){
+        .then(TA => {
+            if(TA.length<1){
                 return res.status(401).json({
                     message: 'Email doesn\'t exist, please enter valid email'
                 });
             }
-            bcrypt.compare(req.body.student_password,std[0].student_password,(err,result)=>{
+            bcrypt.compare(req.body.ta_password,TA[0].ta_password,(err,result)=>{
                 if(err) {
                     return res.status(401).json({
                         message: 'Email or password incorrect'
@@ -75,8 +111,8 @@ router.post('/login',(req,res,next)=>{
                 if(result){
                     const token = jwt.sign(
                         {
-                            student_email:std[0].student_email,
-                            student_id:std[0]._id
+                            ta_email:TA[0].ta_email,
+                            ta_id:TA[0]._id
                         },
                         "secret",
                         {
@@ -103,8 +139,8 @@ router.post('/login',(req,res,next)=>{
 });
 
 // Delete
-router.delete('/delete/:student_id',(req,res,next)=>{
-    Student.remove({_id:req.params.student_id})
+router.delete('/delete/:TA_id',(req,res,next)=>{
+    Teaching_Assistant.remove({_id:req.params.TA_id})
         .exec()
         .then(result=>{
             res.status(200).json({
@@ -129,13 +165,13 @@ router.post('/forgotpassword',function(req,res,next){
             });
         },
         function(token,done){
-            Student.findOne({student_email:req.body.student_email},function(err,user){
-                if(!Student){
+            Teaching_Assistant.findOne({ta_email:req.body.ta_email},function(err,user){
+                if(!Teaching_Assistant){
                     req.flash('Error','No account with that email address exists');
                     return res.redirect('/forgotpassword');
                 }
-                user.student_resetPasswordToken=token;
-                user.student_resetPasswordExpires=Date.now()+7200000;
+                user.ta_resetPasswordToken=token;
+                user.ta_resetPasswordExpires=Date.now()+7200000;
                 user.save(function(err){
                     done(err,token,user);
                 });
@@ -156,17 +192,17 @@ router.post('/forgotpassword',function(req,res,next){
                 }
             }));
             var mailOptions={
-                to: user.student_email,
+                to: user.ta_email,
                 from: 'team11novice@gmail.com',
                 subject: 'Node.js Password Reset',
                 text: 'You are receiving this because you have requested the reset  os the password'+
-                ' Please click on the following link, or paste this into your browser to complete the process\n '+
+                'Please click on the following link, or paste this into your browser to complete the process'+
                 'http://'+req.headers.host+'/reset/'+token+'\n\n'+
                 'If you did not request this, please ignore this email and your password will remail unchanged'
             };
             transport.sendMail(mailOptions,function(err){
                 console.log('Mail Sent');
-                console.log('Success An email has been set to '+user.student_email+ ' with further instructions.');
+                console.log('Success An email has been set to '+user.ta_email+ ' with further instructions.');
                 done(err,'done');
             });
         }
@@ -177,7 +213,7 @@ router.post('/forgotpassword',function(req,res,next){
 });
 router.get('/reset/:token',function(req,res){
     console.log(req.params.token);
-    Student.findOne({student_resetPasswordToken:req.params.token,student_resetPasswordExpires:{$gt:Date.now()}},function(err,user){
+    Teaching_Assistant.findOne({ta_resetPasswordToken:req.params.token,ta_resetPasswordExpires:{$gt:Date.now()}},function(err,user){
         if(!user){
             console.log('error..Password reset token is invalid or has expired.');
             //return res.redirect('/forgotpassword');
@@ -189,25 +225,25 @@ router.get('/reset/:token',function(req,res){
 router.post('/reset/:token',function(req,res){
     async.waterfall([
         function(done){
-            Student.findOne({student_resetPasswordToken:req.params.token,student_resetPasswordExpires:{$gt:Date.now()}},function(err,user){
+            Teaching_Assistant.findOne({ta_resetPasswordToken:req.params.token,ta_resetPasswordExpires:{$gt:Date.now()}},function(err,user){
                 if(!user){
                     console.log('error..Password reset token is invalid or has expired.');
                     return res.redirect('back');
                 }
                 if(req.body.password===req.body.confirmpassword){
-                    user.student_password=req.body.password;
-                    bcrypt.hash(user.student_password,10,(err,hash)=> {
+                    user.ta_password=req.body.password;
+                    bcrypt.hash(user.ta_password,10,(err,hash)=> {
                         //console.log(user.ta_password);
                         if (err) {
                             return res.status(500).json({
                                 error: err
                             });
                         } else {
-                            user.student_password=hash;
-                            student_email=user.student_email;
-                            student_name=user.student_name;
-                            student_contact_number=user.student_contact_number;
+                            ta_email=user.ta_email;
+                            ta_name=user.ta_name;
+                            ta_contact_number=user.ta_contact_number;
                             console.log(hash);
+                            ta_password=hash;
 
                             user.save()
                                 .then(result => {
@@ -222,36 +258,11 @@ router.post('/reset/:token',function(req,res){
                                         error: err
                                     });
                                 });
-                            var sendtransport=nodemailer.createTransport(smtpTransport({
-                                host:'localhost',
-                                port:3000,
-                                secure:'false',
-                                service:'Gmail',
-                                auth:{
-                                    user:'team11novice@gmail.com',
-                                    pass:process.env.GMAILPW
-                                },
-                                tls:{
-                                    rejectUnauthorized:false
-                                }
-                            }));
-                            var mailOptions={
-                                to:user.student_email,
-                                from:'team11novice@gmail.com',
-                                subject:'Your password has been changed',
-                                text:'Hello,\n\n'+
-                                'This is a confirmation that the password for your account '+user.student_email+'has been changed.\n'
-                            };
-                            sendtransport.sendMail(mailOptions,function(err){
-                                console.log('Your password has been changed successfully');
-                                done(err);
-                            });
-
                         }
 
                     });
-                    user.student_resetPasswordToken= undefined;
-                    user.student_resetPasswordExpires=undefined;
+                    user.ta_resetPasswordToken= undefined;
+                    user.ta_resetPasswordExpires=undefined;
                     user.save(function(err){
                         console.log(user);
                         console.log(err);
@@ -263,34 +274,34 @@ router.post('/reset/:token',function(req,res){
                 }
             });
         },
-        // (user,done)=>{
-        //     var transport=nodemailer.createTransport(smtpTransport({
-        //         host:'localhost',
-        //         port:3000,
-        //         secure:'false',
-        //         service:'Gmail',
-        //         auth:{
-        //             user:'team11novice@gmail.com',
-        //             pass:process.env.GMAILPW
-        //         },
-        //         tls:{
-        //             rejectUnauthorized:false
-        //         }
-        //     }));
-        //     var mailOptions={
-        //         to:user.ta_email,
-        //         from:'team11novice@gmail.com',
-        //         subject:'Your password has been changed',
-        //         text:'Hello,\n\n'+
-        //              'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
-        //     };
-        //     transport.sendMail(mailOptions,function(err){
-        //         console.log('Your password has been changed successfully');
-        //         done(err);
-        //     });
-        // }
+        function(user,done){
+            var transport=nodemailer.createTransport(smtpTransport({
+                host:'localhost',
+                port:3000,
+                secure:'false',
+                service:'Gmail',
+                auth:{
+                    user:'team11novice@gmail.com',
+                    pass:process.env.GMAILPW
+                },
+                tls:{
+                    rejectUnauthorized:false
+                }
+            }));
+            var mailOptions={
+                to:user.ta_email,
+                from:'team11novice@gmail.com',
+                subject:'Your password has been changed',
+                text:'Hello,\n\n'+
+                'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
+            };
+            transport.sendMail(mailOptions,function(err){
+                console.log('Your password has been changed successfully');
+                done(err);
+            });
+        }
     ],function(err){
-        //res.redirect('/login');
+        res.redirect('/login');
     });
 });
 // Logout
@@ -301,16 +312,16 @@ router.get('/logout',(req,res,next)=>{
 });
 
 // Edit Profile
-router.patch('/editprofile/:StudentID',(req, res, next) => {
+router.patch('/editprofile/:TAID',(req, res, next) => {
 
-    const StudentID = req.params.StudentID;
-    Student.update({_id: StudentID},{$set: {student_id: req.body.student_id,
-            student_name: req.body.student_name,
-            student_photo: req.body.student_photo,
-            student_email: req.body.student_email,
-            student_password: req.body.student_password,
-            student_contact_number: req.body.student_contact_number,
-            student_educational_details: req.body.student_educational_details
+    const TAID = req.params.TAID;
+    Teaching_Assistant.update({_id: TAID},{$set: {ta_id: req.body.ta_id,
+            ta_name: req.body.ta_name,
+            ta_photo: req.body.ta_photo,
+            ta_email: req.body.ta_email,
+            ta_password: req.body.ta_password,
+            ta_contact_number: req.body.ta_contact_number,
+            ta_educational_details: req.body.ta_educational_details
         } })
         .exec()
         .then(result=>{

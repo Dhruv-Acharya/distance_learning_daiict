@@ -8,12 +8,20 @@ const jwt = require('jsonwebtoken');
 const facultyRoutes = require('./admin/faculties');
 const studentRoutes = require('./admin/students');
 const courseRoutes = require('./admin/courses');
+<<<<<<< HEAD
 const inquiryRouters = require('./admin/inquiries');
+=======
+const inquiryRoutes = require('./admin/inquiries');
+>>>>>>> 75b69966ea4d2a12dcea0d3735bc5573cabc4b99
 
 router.use('/faculty',facultyRoutes);
 router.use('/student',studentRoutes);
 router.use('/course',courseRoutes);
+<<<<<<< HEAD
 router.use('/inquiry',inquiryRouters);
+=======
+router.use('./inquiry',inquiryRoutes);
+>>>>>>> 75b69966ea4d2a12dcea0d3735bc5573cabc4b99
 
 router.post('/login',function(req,res,next){
     Admin.find({admin_email:req.body.admin_email})
@@ -49,7 +57,6 @@ router.post('/login',function(req,res,next){
                });
            }
        }).catch(err=>{
-           console.log(err);
            res.status(500).json({
                error:err
            });
@@ -59,28 +66,32 @@ router.post('/login',function(req,res,next){
 
 router.post('/add', (req, res, next) =>{
     bcrypt.hash(req.body.admin_password, 10,(err,hash)=> {
+        console.log(req.body);
         if(err) {
-            res.status(500).json(err);
+            res.status(500).json({
+                error: err,
+                hash: hash
+            });
         }
         else{
-            const admin = new Admin({
-                _id: new mongoose.Types.ObjectId(),
-                admin_email: req.body.admin_email,
-                admin_password: hash,
+        const admin = new Admin({
+            _id: new mongoose.Types.ObjectId(),
+            admin_email: req.body.admin_email,
+            admin_password: hash,
+        });
+
+        admin.save().then(result => {
+            res.status(201).json({
+                message: "Data Inserted Successfully!",
+                data: result
             });
+        })
+            .catch(err => res.status(500).json({
+                message: "Something went wrong",
+                error: err
+            }));
 
-            admin.save().then(result => {
-                res.status(201).json({
-                    message: "Data Inserted Successfully!",
-                    data: result
-                });
-            })
-                .catch(err => res.status(500).json({
-                    message: "Something went wrong",
-                    error: err
-                }));
-
-        }
+    }
     });
 });
 
