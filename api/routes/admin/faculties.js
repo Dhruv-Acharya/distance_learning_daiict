@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
+const checkAuth = require('./../../middleware/check-auth');
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/faculties');
@@ -17,12 +19,12 @@ const Faculty = require('../../models/faculty');
 
 
 
-router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
+router.post('/add', checkAuth, upload.single('faculty_photo'), (req, res, next) =>{
     bcrypt.hash(req.body.faculty_password, 10,(err,hash)=> {
     if(err) {
-    res.status(500).json({
-       error : err
-    });
+        res.status(500).json({
+            error : err
+        });
     }
     else {
         const faculty = new Faculty({
@@ -48,11 +50,10 @@ router.post('/add', upload.single('faculty_photo'), (req, res, next) =>{
                 });
             });
     }
-
 });
 });
 
-router.get('/view',(req, res, next) => {
+router.get('/view', checkAuth,(req, res, next) => {
     Faculty.find()
         .exec()
         .then(result => {
@@ -69,7 +70,7 @@ router.get('/view',(req, res, next) => {
         });
 });
 
-router.get('/view/:_id',(req, res, next) => {
+router.get('/view/:_id', checkAuth, (req, res, next) => {
     console.log("request on view/facid");
     Faculty.find({_id : req.params._id})
         .exec()
@@ -87,11 +88,13 @@ router.get('/view/:_id',(req, res, next) => {
         });
 });
 
-router.delete('/remove/:facultyID',(req, res, next) => {
-    const facultyID = req.params.facultyID;
-    Faculty.remove({faculty_id: facultyID})
+router.delete('/remove/:_id', checkAuth, (req, res, next) => {
+    console.log(req.params);
+    const facultyID = req.params._id;
+    Faculty.remove({_id: facultyID})
         .exec()
         .then(result => {
+            console.log(result);
             res.status(200).json(result);
         })
         .catch(err => {
@@ -99,15 +102,15 @@ router.delete('/remove/:facultyID',(req, res, next) => {
         });
 });
 
-router.patch('/update/:facultyID', upload.single('faculty_photo'),(req, res, next) => {
-    bcrypt.hash(req.body.faculty_Password,10,(err,hash)=>{
+router.patch('/update/:facultyID', checkAuth, upload.single('faculty_photo'),(req, res, next) => {
+    bcrypt.hash(req.body.faculty_password,10,(err,hash)=>{
         if(err)
         {
             res.status(500).json(err);
         }
         else
         {
-            const facultyID = req.params.facultyID;
+            const facultyID = req.params._id;
             Faculty.update({faculty_id: facultyID},{$set: {
                     faculty_name: req.body.faculty_name,
                     faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,

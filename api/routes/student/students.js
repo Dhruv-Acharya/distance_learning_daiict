@@ -10,7 +10,7 @@ app.post('/login',function(req,res,next){
 
 });
 
-router.post('/signup',(req, res, next) =>{
+router.post('/add',(req, res, next) =>{
     Student.find({Student_Email:req.body.Student_Email})
         .exec()
         .then(data => {

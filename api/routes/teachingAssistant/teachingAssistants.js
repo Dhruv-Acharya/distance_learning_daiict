@@ -6,7 +6,7 @@ const jwt=require('jsonwebtoken');
 const Teaching_Assistant = require('../../models/teachingAssistant');
 
 // Signup
-router.post('/signup',(req, res, next) =>{
+router.post('/add',(req, res, next) =>{
     Teaching_Assistant.find({TA_email:req.body.TA_email})
         .exec()
         .then(TA => {
@@ -23,6 +23,7 @@ router.post('/signup',(req, res, next) =>{
                     }else{
                         const TA= new Teaching_Assistant({
                             _id:new mongoose.Types.ObjectId(),
+                            TA_name : req.body.TA_name,
                             TA_email:req.body.TA_email,
                             TA_password: hash
                         });

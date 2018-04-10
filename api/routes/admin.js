@@ -47,7 +47,6 @@ router.post('/login',function(req,res,next){
                });
            }
        }).catch(err=>{
-           console.log(err);
            res.status(500).json({
                error:err
            });
@@ -59,28 +58,29 @@ router.post('/add', (req, res, next) =>{
     bcrypt.hash(req.body.admin_password, 10,(err,hash)=> {
         if(err) {
             res.status(500).json({
-                error: err
+                error: err,
+                hash: hash
             });
         }
         else{
-            const admin = new Admin({
-                _id: new mongoose.Types.ObjectId(),
-                admin_email: req.body.admin_email,
-                admin_password: hash,
+        const admin = new Admin({
+            _id: new mongoose.Types.ObjectId(),
+            admin_email: req.body.admin_email,
+            admin_password: hash,
+        });
+
+        admin.save().then(result => {
+            res.status(201).json({
+                message: "Data Inserted Successfully!",
+                data: result
             });
+        })
+            .catch(err => res.status(500).json({
+                message: "Something went wrong",
+                error: err
+            }));
 
-            admin.save().then(result => {
-                res.status(201).json({
-                    message: "Data Inserted Successfully!",
-                    data: result
-                });
-            })
-                .catch(err => res.status(500).json({
-                    message: "Something went wrong",
-                    error: err
-                }));
-
-        }
+    }
     });
 });
 

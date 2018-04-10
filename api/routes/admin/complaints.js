@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Complaint = require('../../models/complaint');
+const checkAuth = require('./../../middleware/check-auth');
 
-router.get('/view', function(req,res,next){
+router.get('/view',  checkAuth, function(req,res,next){
     Complaint.find({})
     .exec()
     .then(result=>{
@@ -19,7 +20,7 @@ router.get('/view', function(req,res,next){
     });
 });
 
-router.patch('respond/:complaint_id', function(req,res,next){
+router.patch('respond/:complaint_id', checkAuth, function(req,res,next){
 Complaint.update({complaint_id : req.params.complaint_id}, {$set : {
     complaint_response : req.body.complaint_response
 }

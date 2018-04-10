@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Inquiry = require('../../models/inquiry');
+const checkAuth = require('./../../middleware/check-auth');
 
-router.get('/view', function(req,res,next){
+router.get('/view', checkAuth,  function(req,res,next){
     Inquiry.find({})
     .exec()
     .then(result=>{
@@ -19,7 +20,7 @@ router.get('/view', function(req,res,next){
     });
 });
 
-router.patch('respond/:inquiry_id', function(req,res,next){
+router.patch('respond/:inquiry_id', checkAuth,  function(req,res,next){
         Inquiry.update({inquiry_id : req.params.inquiry_id}, {$set : {
             inquiry_response : req.body.inquiry_response
         }

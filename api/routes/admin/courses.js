@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Course = require('../../models/course');
+const checkAuth = require('./../../middleware/check-auth');
 
-router.get('/view', function(req,res,next){
+router.get('/view', checkAuth,  function(req,res,next){
 Course.find().exec().then(response=>{
     if(!response.length) res.status(404).json({message : "No entries found"});
     else
@@ -17,7 +18,7 @@ Course.find().exec().then(response=>{
       });
 });
 
-router.post('/add', function(req,res,next){
+router.post('/add', checkAuth,  function(req,res,next){
     const course = new Course({
         _id : new mongoose.Types.ObjectId(),
         course_subject : req.body.course_subject
@@ -34,7 +35,7 @@ res.status(201).json({
     });
 });
 
-router.delete('/remove/:course_id', function(req,res,next){
+router.delete('/remove/:course_id', checkAuth,  function(req,res,next){
 Course.remove({course_id:req.params.course_id}).exec().then(result=>{
     res.status(200).json(result);
 }).catch(err=>{
@@ -45,7 +46,7 @@ Course.remove({course_id:req.params.course_id}).exec().then(result=>{
     });
 });
 
-router.patch('/update/:course_id', function(req,res,next){
+router.patch('/update/:course_id', checkAuth,  function(req,res,next){
     const courseID = req.params.course_id;
     Course.update({course_id: courseID},{$set: {
         course_id : req.body.course_id,
