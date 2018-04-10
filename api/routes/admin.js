@@ -8,10 +8,12 @@ const jwt = require('jsonwebtoken');
 const facultyRoutes = require('./admin/faculties');
 const studentRoutes = require('./admin/students');
 const courseRoutes = require('./admin/courses');
+const inquiryRoutes = require('./admin/inquiries');
 
 router.use('/faculty',facultyRoutes);
 router.use('/student',studentRoutes);
 router.use('/course',courseRoutes);
+router.use('./inquiry',inquiryRoutes);
 
 router.post('/login',function(req,res,next){
     Admin.find({admin_email:req.body.admin_email})
@@ -56,6 +58,7 @@ router.post('/login',function(req,res,next){
 
 router.post('/add', (req, res, next) =>{
     bcrypt.hash(req.body.admin_password, 10,(err,hash)=> {
+        console.log(req.body);
         if(err) {
             res.status(500).json({
                 error: err,

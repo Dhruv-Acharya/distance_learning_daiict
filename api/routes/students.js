@@ -12,7 +12,7 @@ app.post('/login',function(req,res,next){
 });
 
 router.post('/add',(req, res, next) =>{
-    Student.find({Student_Email:req.body.Student_Email})
+    Student.find({student_email:req.body.student_email})
         .exec()
         .then(data => {
             if(data.length>=1){
@@ -20,28 +20,26 @@ router.post('/add',(req, res, next) =>{
                     message: 'Email already exists, try different email'
                 });
             }else{
-                bcrypt.hash(req.body.Student_Password,10,(err,hashed_pass)=> {
+                bcrypt.hash(req.body.student_password,10,(err,hashed_pass)=> {
                     if(err) {
                         return res.status(500).json({
                             error:err
                         });
                     }else{
                         const student= new Student({
-
-                            Student_Name:req.body.Student_Name,
-                            Student_Photo:req.body.Student_Photo,
-                            Student_Occupation:req.body.Student_Occupation,
-                            Student_Industry:req.body.Student_Industry,
-                            Student_CollegeName:req.body.Student_College,
-                            Student_Experience:req.body.Student_Experience,
-                            Student_Education_Level:req.body.Student_Education_Level,
-                            Student_Email:req.body.Student_Email,
-                            Student_Password:hashed_pass,
-                            Student_MobileNo:req.body.Student_MObileNo,
-                            Student_Country:req.body.Student_Country,
-                            Student_BirthDate:req.body.Student_BirthDate,
-                            Student_Address:req.body.Student_Address,
-                            Student_TopSkills:req.body.Student_TopSkills
+                            student_name : req.body.student_name,
+                            //student_photo : req.file.path,
+                            student_occupation : req.body.student_occupation,
+                            student_industry : req.body.student_industry,
+                            student_collegeName : req.body.student_collegeName,
+                            student_experience : req.body.student_experience,
+                            student_education_level : req.body.student_education_level,
+                            student_email : req.body.student_email,
+                            student_password : req.body.student_password,
+                            student_contact_number : req.body.student_contact_number,
+                            student_country : req.body.student_country,
+                            student_birthdate : req.body.student_birthdate,
+                            student_address : req.body.student_address
                         });
                         Student.save()
                             .then(result=>{

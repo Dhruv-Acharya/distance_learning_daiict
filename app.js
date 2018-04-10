@@ -7,7 +7,7 @@ const cors = require('cors');
 require('./env');
 
 const adminRoutes = require('./api/routes/admin');
-const taRoutes = require('./api/routes/teachingAssistant/teachingAssistants');
+const taRoutes = require('./api/routes/teachingAssistant');
 const studentRoutes = require('./api/routes/students');
 
 const app = express();
