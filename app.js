@@ -18,14 +18,6 @@ app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended : false}));
 app.use(bodyParser.json());
 
-<<<<<<< HEAD
-app.use(cors());
-/*app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-=======
 //app.use(cors());
 
 app.use((req, res, next) => {
@@ -33,21 +25,14 @@ app.use((req, res, next) => {
     res.header(
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
->>>>>>> 75b69966ea4d2a12dcea0d3735bc5573cabc4b99
     );
     if (req.method === 'OPTIONS') {
         res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
         return res.status(200).json({});
     }
     next();
-<<<<<<< HEAD
-  });*/
- // include before other routes
-  app.options('/admin', cors()); 
-=======
 });
 
->>>>>>> 75b69966ea4d2a12dcea0d3735bc5573cabc4b99
 app.use('/admin',adminRoutes);
 app.use('/student', studentRoutes);
 app.use('/ta',taRoutes);

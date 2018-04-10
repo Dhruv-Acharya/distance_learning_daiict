@@ -50,11 +50,7 @@ res.status(201).json({
     });
 });
 
-<<<<<<< HEAD
-router.delete('/remove/:course_id', function(req,res,next){
-=======
 router.delete('/remove/:course_id', checkAuth,  function(req,res,next){
->>>>>>> 75b69966ea4d2a12dcea0d3735bc5573cabc4b99
 Course.remove({_id:req.params.course_id}).exec().then(result=>{
     res.status(200).json(result);
 }).catch(err=>{
@@ -65,15 +61,9 @@ Course.remove({_id:req.params.course_id}).exec().then(result=>{
     });
 });
 
-<<<<<<< HEAD
-router.patch('/update/:course_id', function(req,res,next){
-    Course.update({_id: req.params.course_id},{$set: {
-        course_id : req.body.course_id,
-=======
 router.patch('/update/:course_id', checkAuth,  function(req,res,next){
 console.log(req.body.course_subject);
     Course.update({_id: req.params.course_id},{$set: {
->>>>>>> 75b69966ea4d2a12dcea0d3735bc5573cabc4b99
         course_subject : req.body.course_subject} })
         .exec()
         .then(result => {
