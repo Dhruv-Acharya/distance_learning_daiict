@@ -28,8 +28,8 @@ router.post('/login',function(req,res,next){
             bcrypt.compare(req.body.admin_password,data[0].admin_password,(err,result)=>{
                if(err) {
                        return res.status(401).json({
-                            message: 'Invalid email or password'
-                        });
+                       message: 'Invalid email or password'
+                   });
                    }
                    if(result){
                        const token = jwt.sign(

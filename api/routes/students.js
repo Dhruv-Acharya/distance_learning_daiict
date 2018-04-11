@@ -12,6 +12,7 @@ app.post('/login',function(req,res,next){
 });
 
 router.post('/add',(req, res, next) =>{
+    console.log(req);
     Student.find({student_email:req.body.student_email})
         .exec()
         .then(data => {
@@ -29,10 +30,10 @@ router.post('/add',(req, res, next) =>{
                         const student= new Student({
                             student_name : req.body.student_name,
                             student_email : req.body.student_email,
-                            student_password : req.body.student_password,
+                            student_password : hashed_pass,
                             student_contact_number : req.body.student_contact_number
                         });
-                        Student.save()
+                        student.save()
                             .then(result=>{
                                 console.log(result);
                                 res.status(201).json({

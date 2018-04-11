@@ -24,7 +24,7 @@ router.post('/login',function(req,res,next){
                    if(result){
                        const token = jwt.sign(
                            {
-                               faculty_email:data[0].faculty_email,
+                               _id:data[0]._id,
                            },
                            "nevermind",
                            {
