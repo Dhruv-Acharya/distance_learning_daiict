@@ -193,8 +193,8 @@ router.post('/forgotpassword',function(req,res,next){
                 from: 'team11novice@gmail.com',
                 subject: 'Node.js Password Reset',
                 text: 'You are receiving this because you have requested the reset  os the password'+
-                'Please click on the following link, or paste this into your browser to complete the process '+
-                'http://'+req.headers.host+'/reset?key='+token+'\n\n'+
+                ' Please click on the following link, or paste this into your browser to complete the process\n '+
+                'http://'+req.headers.host+'/reset/'+token+'\n\n'+
                 'If you did not request this, please ignore this email and your password will remail unchanged'
             };
             transport.sendMail(mailOptions,function(err){
@@ -236,11 +236,11 @@ router.post('/reset/:token',function(req,res){
                                 error: err
                             });
                         } else {
+                            user.ta_password=hash;
                             ta_email=user.ta_email;
                             ta_name=user.ta_name;
                             ta_contact_number=user.ta_contact_number;
                             console.log(hash);
-                            ta_password=hash;
 
                             user.save()
                                 .then(result => {
@@ -255,11 +255,36 @@ router.post('/reset/:token',function(req,res){
                                         error: err
                                     });
                                 });
+                            var sendtransport=nodemailer.createTransport(smtpTransport({
+                                host:'localhost',
+                                port:3000,
+                                secure:'false',
+                                service:'Gmail',
+                                auth:{
+                                    user:'team11novice@gmail.com',
+                                    pass:process.env.GMAILPW
+                                },
+                                tls:{
+                                    rejectUnauthorized:false
+                                }
+                            }));
+                            var mailOptions={
+                                to:user.ta_email,
+                                from:'team11novice@gmail.com',
+                                subject:'Your password has been changed',
+                                text:'Hello,\n\n'+
+                                'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
+                            };
+                            sendtransport.sendMail(mailOptions,function(err){
+                                console.log('Your password has been changed successfully');
+                                done(err);
+                            });
+
                         }
 
                     });
-                    user.ta_resetPasswordToken= undefined;
-                    user.ta_resetPasswordExpires=undefined;
+                    // user.ta_resetPasswordToken= undefined;
+                    //user.ta_resetPasswordExpires=undefined;
                     user.save(function(err){
                         console.log(user);
                         console.log(err);
@@ -271,34 +296,34 @@ router.post('/reset/:token',function(req,res){
                 }
             });
         },
-        function(user,done){
-            var transport=nodemailer.createTransport(smtpTransport({
-                host:'localhost',
-                port:3000,
-                secure:'false',
-                service:'Gmail',
-                auth:{
-                    user:'team11novice@gmail.com',
-                    pass:process.env.GMAILPW
-                },
-                tls:{
-                    rejectUnauthorized:false
-                }
-            }));
-            var mailOptions={
-                to:user.ta_email,
-                from:'team11novice@gmail.com',
-                subject:'Your password has been changed',
-                text:'Hello,\n\n'+
-                'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
-            };
-            transport.sendMail(mailOptions,function(err){
-                console.log('Your password has been changed successfully');
-                done(err);
-            });
-        }
+        // (user,done)=>{
+        //     var transport=nodemailer.createTransport(smtpTransport({
+        //         host:'localhost',
+        //         port:3000,
+        //         secure:'false',
+        //         service:'Gmail',
+        //         auth:{
+        //             user:'team11novice@gmail.com',
+        //             pass:process.env.GMAILPW
+        //         },
+        //         tls:{
+        //             rejectUnauthorized:false
+        //         }
+        //     }));
+        //     var mailOptions={
+        //         to:user.ta_email,
+        //         from:'team11novice@gmail.com',
+        //         subject:'Your password has been changed',
+        //         text:'Hello,\n\n'+
+        //              'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
+        //     };
+        //     transport.sendMail(mailOptions,function(err){
+        //         console.log('Your password has been changed successfully');
+        //         done(err);
+        //     });
+        // }
     ],function(err){
-        res.redirect('/login');
+        //res.redirect('/login');
     });
 });
 // Logout

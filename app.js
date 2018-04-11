@@ -9,6 +9,7 @@ require('./env');
 const adminRoutes = require('./api/routes/admin');
 const taRoutes = require('./api/routes/teachingAssistant');
 const studentRoutes = require('./api/routes/students');
+const facultyRoutes = require('./api/routes/faculty');
 
 const app = express();
 mongoose.connect('mongodb://Dhruv:h9yjnQ5YRTvbIpyO@practice-shard-00-00-qh5e1.mongodb.net:27017,practice-shard-00-01-qh5e1.mongodb.net:27017,practice-shard-00-02-qh5e1.mongodb.net:27017/test?ssl=true&replicaSet=practice-shard-0&authSource=admin');
@@ -36,8 +37,21 @@ app.use((req, res, next) => {
 app.use('/admin',adminRoutes);
 app.use('/student', studentRoutes);
 app.use('/ta',taRoutes);
+app.use('/faculty', facultyRoutes);
 
+app.get('/test', function(req,res,next){
+res.json({
+    success : "Successful test"
+});
+});
 
+app.post('/test', function(req,res,next){
+    console.log(req.body);
+    res.json({
+        success : "Successful test"
+    });
+    });
+    
 app.use((req, res, next) => {
     const error = new Error('Not Found!');
     error.status = 404;

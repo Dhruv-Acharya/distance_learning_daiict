@@ -118,5 +118,4 @@ router.patch('/update/:faculty_id', checkAuth, upload.single('faculty_photo'),(r
             res.status(500).json(err);
         });
 });
-
 module.exports = router;
