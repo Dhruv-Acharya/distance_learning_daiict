@@ -193,8 +193,8 @@ router.post('/forgotpassword',function(req,res,next){
                 from: 'team11novice@gmail.com',
                 subject: 'Node.js Password Reset',
                 text: 'You are receiving this because you have requested the reset  os the password'+
-                'Please click on the following link, or paste this into your browser to complete the process'+
-                'http://'+req.headers.host+'/reset/'+token+'\n\n'+
+                'Please click on the following link, or paste this into your browser to complete the process '+
+                'http://'+req.headers.host+'/reset?key='+token+'\n\n'+
                 'If you did not request this, please ignore this email and your password will remail unchanged'
             };
             transport.sendMail(mailOptions,function(err){

@@ -22,6 +22,7 @@ const storage = multer.diskStorage({
     }
 });
 
+<<<<<<< HEAD
 const upload = multer({storage:storage});
 const Student = require('../models/student');
 
@@ -58,6 +59,10 @@ router.post('/signup', upload.single('student_photo'), (req, res, next) => {
 
 // Login
 router.post('/login',(req,res,next)=>{
+=======
+router.post('/add',(req, res, next) =>{
+    console.log(req);
+>>>>>>> 65a4d7d0ed122b49a88eb676cd38a714714b3373
     Student.find({student_email:req.body.student_email})
         .exec()
         .then(data => {
@@ -75,10 +80,10 @@ router.post('/login',(req,res,next)=>{
                         const student= new Student({
                             student_name : req.body.student_name,
                             student_email : req.body.student_email,
-                            student_password : req.body.student_password,
+                            student_password : hashed_pass,
                             student_contact_number : req.body.student_contact_number
                         });
-                        Student.save()
+                        student.save()
                             .then(result=>{
                                 console.log(result);
                                 res.status(201).json({
