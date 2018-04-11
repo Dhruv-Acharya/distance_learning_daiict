@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Student = require('../models/student');
+const Student = require('../../models/student');
 const checkAuth = require('./../../middleware/check-auth');
 
 router.get('/view', checkAuth,  function(req,res,next){

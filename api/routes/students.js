@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({storage:storage});
-const Student = require('../../models/student');
+const Student = require('../models/student');
 
 
 //signup
