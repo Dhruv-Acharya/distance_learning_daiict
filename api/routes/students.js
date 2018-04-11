@@ -39,7 +39,7 @@ router.post('/add', (req, res, next) => {
                 _id: new mongoose.Types.ObjectId(),
                 student_name: req.body.student_name,
                 student_email: req.body.student_email,
-                student_password: hash,
+                student_password: req.body.student_password,
                 student_contact_number: req.body.student_contact_number
             });
 
