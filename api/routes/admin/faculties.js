@@ -102,28 +102,20 @@ router.delete('/remove/:faculty_id', checkAuth, (req, res, next) => {
 });
 
 router.patch('/update/:faculty_id', checkAuth, upload.single('faculty_photo'),(req, res, next) => {
-    bcrypt.hash(req.body.faculty_password,10,(err,hash)=>{
-        if(err)
-        {
+
+    Faculty.update({_id: req.params.faculty_id},{$set: {
+        faculty_name: req.body.faculty_name,
+        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
+        faculty_email: req.body.faculty_email,
+        faculty_contact_number: req.body.faculty_contact_number,
+        faculty_educational_details: req.body.faculty_educational_details,
+        faculty_area_interest: req.body.faculty_area_interest} })
+        .exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
             res.status(500).json(err);
-        }
-        else
-        {
-            Faculty.update({_id: req.params.faculty_id},{$set: {
-                    faculty_name: req.body.faculty_name,
-                    faculty_photo: "https://sheltered-spire-10162.herokuapp.com/" + req.file.path,
-                    faculty_email: req.body.faculty_email,
-                    faculty_password: hash,
-                    faculty_contact_number: req.body.faculty_contact_number,
-                    faculty_educational_details: req.body.faculty_educational_details,
-                    faculty_area_interest: req.body.faculty_area_interest} })
-                .exec()
-                .then(result => {
-                        res.status(200).json(result);
-                })
-                .catch(err => {
-                    res.status(500).json(err);
-                });}
-    });
+        });
 });
 module.exports = router;

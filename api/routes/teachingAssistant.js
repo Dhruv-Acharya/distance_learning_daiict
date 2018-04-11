@@ -8,6 +8,8 @@ const async=require('async');
 const nodemailer=require('nodemailer');
 const smtpTransport=require('nodemailer-smtp-transport');
 const crypto=require('crypto');
+const checkAuth = require('./../middleware/check-auth');
+require('./../../env');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -26,13 +28,15 @@ const upload = multer({storage:storage});
 const Teaching_Assistant = require('../models/teachingAssistant');
 
 
-router.post('/signup', upload.single('ta_photo'), (req, res, next) => {
+router.post('/add', (req, res, next) => {
     bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
         if (err) {
-            res.status(500).json(err);
+            console.log(err);
+            res.status(500).json({
+                error : err
+            });
         }
         else {
-
             const TA = new Teaching_Assistant({
                 _id: new mongoose.Types.ObjectId(),
                 ta_name: req.body.ta_name,
@@ -41,7 +45,7 @@ router.post('/signup', upload.single('ta_photo'), (req, res, next) => {
                 ta_password: hash,
                 ta_contact_number: req.body.ta_contact_number
             });
-
+            console.log(TA);
 
             TA.save().then(result => {
                 res.status(201).json({
@@ -49,49 +53,42 @@ router.post('/signup', upload.single('ta_photo'), (req, res, next) => {
                     data: result
                 });
             })
-                .catch(err => res.status(500).json({
+                .catch(err =>{
+                    res.status(500).json({
                     message: "Something went wrong",
                     error: err
-                }));
+                })});
         }
     })
 });
-/*
-// Signup
-router.post('/signup',(req, res, next) => {
-    router.post('/signup', upload.single('ta_photo'), (req, res, next) => {
-        bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
-            if (err) {
-                res.status(500).json(err);
-            }
-            else {
 
-                const TA = new Teaching_Assistant({
-                    _id: new mongoose.Types.ObjectId(),
-                    ta_id: req.body.ta_id,
-                    ta_name: req.body.ta_name,
-                    ta_photo: req.body.ta_photo,
-                    ta_email: req.body.ta_email,
-                    ta_password: req.body.ta_password,
-                    ta_contact_number: req.body.ta_contact_number,
+router.patch('/update/:ta_id',checkAuth, upload.single('ta_photo') , (req, res, next) => {
+
+            const TA = new Teaching_Assistant({
+                _id: new mongoose.Types.ObjectId(),
+                ta_name: req.body.ta_name,
+                ta_photo: req.file.path,
+                ta_email: req.body.ta_email,
+                ta_password: hash,
+                ta_contact_number: req.body.ta_contact_number,
+                ta_educational_details: req.body.ta_educational_details
+            });
+
+            TA.update().then(result => {
+                res.status(200).json({
+                    message: "Data Inserted Successfully!",
+                    data: result
                 });
-
-                TA.save().then(result => {
-                    res.status(201).json({
-                        message: "Data Inserted Successfully!",
-                        data: result
-                    });
-                })
-                    .catch(err => res.status(500).json({
+            })
+                .catch(err =>{
+                    console.log(err);
+                    res.status(500).json({
                         message: "Something went wrong",
                         error: err
-                    }));
-            }
-        })
-    })
-
+                    })});
 });
-*/
+
+
 // Login
 router.post('/login',(req,res,next)=>{
     Teaching_Assistant.find({ta_email:req.body.ta_email})
