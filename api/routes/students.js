@@ -22,7 +22,9 @@ const storage = multer.diskStorage({
     }
 });
 
-});
+const upload = multer({storage:storage});*/
+const Student = require('./../models/student');
+
 
 //signup
 router.post('/add', (req, res, next) => {
@@ -302,13 +304,13 @@ router.patch('/editprofile/:StudentID',(req, res, next) => {
 
     const StudentID = req.params.StudentID;
     Student.update({_id: StudentID},{$set: {student_id: req.body.student_id,
-            student_name: req.body.student_name,
-            student_photo: req.body.student_photo,
-            student_email: req.body.student_email,
-            student_password: req.body.student_password,
-            student_contact_number: req.body.student_contact_number,
-            student_educational_details: req.body.student_educational_details
-        } })
+        student_name: req.body.student_name,
+        student_photo: req.body.student_photo,
+        student_email: req.body.student_email,
+        student_password: req.body.student_password,
+        student_contact_number: req.body.student_contact_number,
+        student_educational_details: req.body.student_educational_details
+    } })
         .exec()
         .then(result=>{
             res.status(200).json({
