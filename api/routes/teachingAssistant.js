@@ -9,6 +9,7 @@ const nodemailer=require('nodemailer');
 const smtpTransport=require('nodemailer-smtp-transport');
 const crypto=require('crypto');
 const checkAuth = require('./../middleware/check-auth');
+require('./../../env');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
