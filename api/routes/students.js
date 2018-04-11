@@ -28,13 +28,13 @@ const Student = require('./../models/student');
 
 //signup
 router.post('/add', (req, res, next) => {
-    bcrypt.hash(req.body.student_password, 10,(err,hash)=> {
+    /*bcrypt.hash(req.body.student_password, 10,(err,hash)=> {
         if(err) {
             res.status(500).json({
                 error : err
             });
         }
-        else {
+        else {*/
             const student = new Student({
                 _id: new mongoose.Types.ObjectId(),
                 student_name: req.body.student_name,
@@ -54,8 +54,8 @@ router.post('/add', (req, res, next) => {
                         error: err
                     });
                 });
-        }
-    });
+        /*}
+    });*/
 });
 
 // Login
