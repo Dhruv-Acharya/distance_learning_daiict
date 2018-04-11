@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
-const subtopic = require('subtopic');
+const subtopic = require('./subtopic');
 
 const facultyCourseSchema = mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     course_id : mongoose.Schema.ObjectId,
     faculty_id : mongoose.Schema.ObjectId,
     facultyCourse_duration : Number,
+    facultyCourse_name : String,
     facultyCourse_description : String,
     facultyCourse_image : String,
     facultyCourse_ta_require : Boolean,

@@ -22,47 +22,8 @@ const storage = multer.diskStorage({
     }
 });
 
-<<<<<<< HEAD
-const upload = multer({storage:storage});
-const Student = require('../models/student');
-
-
-//signup
-router.post('/signup', upload.single('student_photo'), (req, res, next) => {
-    bcrypt.hash(req.body.student_password, 10, (err, hash) => {
-        if (err) {
-            res.status(500).json(err);
-        }
-        else {
-            const std = new Student({
-                _id: new mongoose.Types.ObjectId(),
-                student_name: req.body.student_name,
-                student_photo: req.file.path,
-                student_email: req.body.student_email,
-                student_password: hash,
-                student_contact_number: req.body.student_contact_number,
-            });
-
-            std.save().then(result => {
-                res.status(201).json({
-                    message: "Data Inserted Successfully!",
-                    data: result
-                });
-            })
-                .catch(err => res.status(500).json({
-                    message: "Something went wrong",
-                    error: err
-                }));
-        }
-    })
-});
-
-// Login
-router.post('/login',(req,res,next)=>{
-=======
 router.post('/add',(req, res, next) =>{
     console.log(req);
->>>>>>> 65a4d7d0ed122b49a88eb676cd38a714714b3373
     Student.find({student_email:req.body.student_email})
         .exec()
         .then(data => {

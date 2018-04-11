@@ -191,10 +191,10 @@ router.post('/forgotpassword',function(req,res,next){
             var mailOptions={
                 to: user.ta_email,
                 from: 'team11novice@gmail.com',
-                subject: 'Node.js Password Reset',
+                subject: 'Distance learning for DA-IICT Password Reset',
                 text: 'You are receiving this because you have requested the reset  os the password'+
-                'Please click on the following link, or paste this into your browser to complete the process '+
-                'http://'+req.headers.host+'/reset?key='+token+'\n\n'+
+                'Please copy the following token and paste this into your reset window to complete the process \n'+
+                 token+'\n\n'+
                 'If you did not request this, please ignore this email and your password will remail unchanged'
             };
             transport.sendMail(mailOptions,function(err){
@@ -219,10 +219,10 @@ router.get('/reset/:token',function(req,res){
         //res.render('reset',{token:req.params.token});
     });
 });
-router.post('/reset/:token',function(req,res){
+router.post('/reset',function(req,res){
     async.waterfall([
         function(done){
-            Teaching_Assistant.findOne({ta_resetPasswordToken:req.params.token,ta_resetPasswordExpires:{$gt:Date.now()}},function(err,user){
+            Teaching_Assistant.findOne({ta_resetPasswordToken:req.body.token,ta_resetPasswordExpires:{$gt:Date.now()}},function(err,user){
                 if(!user){
                     console.log('error..Password reset token is invalid or has expired.');
                     return res.redirect('back');
@@ -230,17 +230,16 @@ router.post('/reset/:token',function(req,res){
                 if(req.body.password===req.body.confirmpassword){
                     user.ta_password=req.body.password;
                     bcrypt.hash(user.ta_password,10,(err,hash)=> {
-                        //console.log(user.ta_password);
                         if (err) {
                             return res.status(500).json({
                                 error: err
                             });
                         } else {
+                            user.ta_password=hash;
                             ta_email=user.ta_email;
                             ta_name=user.ta_name;
                             ta_contact_number=user.ta_contact_number;
-                            console.log(hash);
-                            ta_password=hash;
+                           
 
                             user.save()
                                 .then(result => {
@@ -254,6 +253,30 @@ router.post('/reset/:token',function(req,res){
                                     res.status(500).json({
                                         error: err
                                     });
+                                });
+                                var sendtransport=nodemailer.createTransport(smtpTransport({
+                                    host:'localhost',
+                                    port:3000,
+                                    secure:'false',
+                                    service:'Gmail',
+                                    auth:{
+                                        user:'team11novice@gmail.com',
+                                        pass:process.env.GMAILPW
+                                    },
+                                    tls:{
+                                        rejectUnauthorized:false
+                                    }
+                                }));
+                                var mailOptions={
+                                    to:user.ta_email,
+                                    from:'team11novice@gmail.com',
+                                    subject:'Your password has been changed',
+                                    text:'Hello,\n\n'+
+                                    'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
+                                };
+                                sendtransport.sendMail(mailOptions,function(err){
+                                    console.log('Your password has been changed successfully');
+                                    done(err);
                                 });
                         }
 
@@ -271,32 +294,32 @@ router.post('/reset/:token',function(req,res){
                 }
             });
         },
-        function(user,done){
-            var transport=nodemailer.createTransport(smtpTransport({
-                host:'localhost',
-                port:3000,
-                secure:'false',
-                service:'Gmail',
-                auth:{
-                    user:'team11novice@gmail.com',
-                    pass:process.env.GMAILPW
-                },
-                tls:{
-                    rejectUnauthorized:false
-                }
-            }));
-            var mailOptions={
-                to:user.ta_email,
-                from:'team11novice@gmail.com',
-                subject:'Your password has been changed',
-                text:'Hello,\n\n'+
-                'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
-            };
-            transport.sendMail(mailOptions,function(err){
-                console.log('Your password has been changed successfully');
-                done(err);
-            });
-        }
+        // function(user,done){
+        //     var sendtransport=nodemailer.createTransport(smtpTransport({
+        //         host:'localhost',
+        //         port:3000,
+        //         secure:'false',
+        //         service:'Gmail',
+        //         auth:{
+        //             user:'team11novice@gmail.com',
+        //             pass:process.env.GMAILPW
+        //         },
+        //         tls:{
+        //             rejectUnauthorized:false
+        //         }
+        //     }));
+        //     var mailOptions={
+        //         to:user.ta_email,
+        //         from:'team11novice@gmail.com',
+        //         subject:'Your password has been changed',
+        //         text:'Hello,\n\n'+
+        //         'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
+        //     };
+        //     sendtransport.sendMail(mailOptions,function(err){
+        //         console.log('Your password has been changed successfully');
+        //         done(err);
+        //     });
+        // }
     ],function(err){
         res.redirect('/login');
     });

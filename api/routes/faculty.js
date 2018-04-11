@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Faculty = require('../models/faculty');
-const faculty= require('../../models/faculty');
+const faculty = require('../models/faculty');
 const courseRoutes = require('./faculty/courses');
+
 router.use('/course',courseRoutes);
 router.post('/login',function(req,res,next){
     faculty.find({faculty_email:req.body.faculty_email})

@@ -3,6 +3,17 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const FacultyCourse = require('../../models/facultyCourse');
 const Subtopic = require('../../models/subtopic');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/faculties');
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({storage: storage});
 
 router.get('/view', function(req,res,next){
     FacultyCourse.find().exec().then(result =>{
@@ -30,9 +41,11 @@ router.get('/view/:course_id', function(req,res,next){
     });
 
 router.post('/create',upload.any(), function(req,res,next){
+console.log(req.body);
 var i=1;
 var subtopicArray = [];
-    for(subtopic in req.body.subtopics)
+console.log(req.body.facultyCourse_subtopics[0]);
+    for(subtopic in req.body.facultyCourse_subtopics)
 { 
     var subtopic = new Subtopic ({
     _id : new mongoose.Types.ObjectId(),
@@ -45,6 +58,7 @@ var subtopicArray = [];
 });
 subtopicArray.push(subtopic._id);
 i+=2;
+console.log("into it");
 }
     const facultyCourse = new FacultyCourse({
     _id: new mongoose.Types.ObjectId(),
