@@ -28,31 +28,34 @@ const Student = require('./../models/student');
 
 //signup
 router.post('/add', (req, res, next) => {
-    bcrypt.hash(req.body.student_password, 10, (err, hash) => {
-        if (err) {
-            res.status(500).json(err);
+    bcrypt.hash(req.body.student_password, 10,(err,hash)=> {
+        if(err) {
+            res.status(500).json({
+                error : err
+            });
         }
         else {
-            const std = new Student({
+            const student = new Student({
                 _id: new mongoose.Types.ObjectId(),
                 student_name: req.body.student_name,
                 student_email: req.body.student_email,
                 student_password: hash,
-                student_contact_number: req.body.student_contact_number,
+                student_contact_number: req.body.student_contact_number
             });
 
-            std.save().then(result => {
+            student.save().then(result => {
                 res.status(201).json({
                     message: "Data Inserted Successfully!",
                     data: result
                 });
             })
-                .catch(err => res.status(500).json({
-                    message: "Something went wrong",
-                    error: err
-                }));
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    });
+                });
         }
-    })
+    });
 });
 
 // Login
