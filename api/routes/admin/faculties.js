@@ -126,4 +126,4 @@ router.patch('/update/:faculty_id', checkAuth, upload.single('faculty_photo'),(r
                 });}
     });
 });
-Module.exports = router;
+module.exports = router;
