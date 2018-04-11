@@ -44,7 +44,7 @@ router.post('/create',upload.any(), function(req,res,next){
 console.log(req.body);
 var i=1;
 var subtopicArray = [];
-console.log(req.body.facultyCourse_subtopics[0]);
+console.log(req.body.facultyCourse_subtopics['0']);
     for(subtopic in req.body.facultyCourse_subtopics)
 { 
     var subtopic = new Subtopic ({
