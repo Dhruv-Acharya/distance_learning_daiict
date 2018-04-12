@@ -12,4 +12,4 @@ const subtopicSchema = mongoose.Schema({
     subtopic_assignment_acquiredMarks :Number
 });
 
-//module.exports =  mongoose.model('subtopic', subtopicSchema);
+module.exports =  mongoose.model('Subtopic', subtopicSchema);

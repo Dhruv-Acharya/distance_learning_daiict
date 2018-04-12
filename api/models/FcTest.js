@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-const FcTestQuestion = require('./FcTestQuestion');
 
 const FcTestSchema = mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
     FC_id : mongoose.Schema.ObjectId,
-    FcTest_questions : [FcTestQuestion]
+    FcTest_questions : []
 });
 
 module.exports =  mongoose.model('FcTest', FcTestSchema);

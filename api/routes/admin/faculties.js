@@ -71,7 +71,6 @@ router.get('/view', checkAuth,(req, res, next) => {
 });
 
 router.get('/view/:faculty_id', checkAuth, (req, res, next) => {
-    console.log("request on view/facid");
     Faculty.find({_id : req.params.faculty_id})
         .exec()
         .then(result => {

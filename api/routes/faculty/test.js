@@ -14,8 +14,11 @@ router.post('/create', (req, res, next) => {
             FcTestQuestion_answers : req.body.FcTestQuestion_answers,
             FcTestQuestion_answer : req.body.FcTestQuestion_answer
         });
-        quetionArray.push(question._id);
+        question.save()
+            .then(quetionArray.push(question._id))
+            .catch(err => {err});
     }
+    console.log(quetionArray);
 });
 
 module.exports = router;
