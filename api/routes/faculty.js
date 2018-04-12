@@ -5,6 +5,7 @@ const faculty = require('../models/faculty');
 const courseRoutes = require('./faculty/courses');
 
 router.use('/course',courseRoutes);
+
 router.post('/login',function(req,res,next){
     faculty.find({faculty_email:req.body.faculty_email})
        .exec()

@@ -1,10 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
 const Course = require('../../models/course');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads/faculties');
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({storage: storage});
+
 const checkAuth = require('./../../middleware/check-auth');
 
-router.get('/view', checkAuth,  function(req,res,next){
+router.get('/view', checkAuth, function(req,res,next){
 Course.find({}).exec().then(response => {
     if(!response.length) res.status(404).json({message : "No entries found"});
     else
@@ -32,11 +44,13 @@ router.get('/view/ :course_id', checkAuth,  function(req,res,next){
     });
 });
 
-router.post('/add', checkAuth,  function(req,res,next){
+router.post('/add', checkAuth, upload.single('course_photo'), function(req,res,next){
     console.log(req);
     const course = new Course({
         _id : new mongoose.Types.ObjectId(),
-        course_subject : req.body.course_subject
+        course_subject : req.body.course_subject,
+        course_photo : req.file.path,
+        course_description : req.body.course_description
     });
 course.save().then(result =>{
 res.status(201).json({
