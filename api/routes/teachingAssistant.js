@@ -29,6 +29,7 @@ const Teaching_Assistant = require('../models/teachingAssistant');
 
 
 router.post('/add', (req, res, next) => {
+    console.log(req.body);
     bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
         if (err) {
             console.log(err);
