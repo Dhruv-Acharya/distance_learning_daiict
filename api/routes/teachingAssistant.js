@@ -66,11 +66,9 @@ router.post('/add', (req, res, next) => {
 router.patch('/update/:ta_id',checkAuth, upload.single('ta_photo') , (req, res, next) => {
 
             const TA = new Teaching_Assistant({
-                _id: new mongoose.Types.ObjectId(),
                 ta_name: req.body.ta_name,
-                ta_photo: req.file.path,
+                ta_photo: "https://sheltered-spire-10162.herokuapp.com" + req.file.path,
                 ta_email: req.body.ta_email,
-                ta_password: hash,
                 ta_contact_number: req.body.ta_contact_number,
                 ta_educational_details: req.body.ta_educational_details
             });
@@ -112,7 +110,7 @@ router.post('/login',(req,res,next)=>{
                             ta_email:TA[0].ta_email,
                             ta_id:TA[0]._id
                         },
-                        "secret",
+                        process.env.JWT_KEY,
                         {
                             expiresIn:'1h'
                         }

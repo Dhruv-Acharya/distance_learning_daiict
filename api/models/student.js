@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const studentSchema = mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
-    student_id: Number,
     student_name: String,
     student_photo: String,
     student_email: {
@@ -19,12 +18,12 @@ const studentSchema = mongoose.Schema({
     },
     student_educational_details: String,
     student_occupation: String,
-    student_Industry: String,
+    student_industry: String,
     student_collage_name: String,
     student_experience_level: String,
     student_gender: String,
     student_birthdate:String,
-    student_Address:String,
+    student_address:String,
     student_topSkills: String,
     student_resetPasswordExpires:Date,
     student_resetPasswordToken:String

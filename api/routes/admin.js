@@ -4,6 +4,7 @@ const Admin = require('../models/admin');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('./../../env');
 
 const facultyRoutes = require('./admin/faculties');
 const studentRoutes = require('./admin/students');
@@ -13,7 +14,7 @@ const inquiryRoutes = require('./admin/inquiries');
 router.use('/faculty',facultyRoutes);
 router.use('/student',studentRoutes);
 router.use('/course',courseRoutes);
-router.use('./inquiry',inquiryRoutes);
+router.use('/inquiry',inquiryRoutes);
 
 router.post('/login',function(req,res,next){
     Admin.find({admin_email:req.body.admin_email})
@@ -36,7 +37,7 @@ router.post('/login',function(req,res,next){
                            {
                                admin_email:data[0].admin_email,
                            },
-                           "nevermind",
+                           process.env.JWT_KEY,
                            {
                                expiresIn:'1h'
                            }

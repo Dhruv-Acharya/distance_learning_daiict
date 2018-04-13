@@ -3,8 +3,11 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const faculty = require('../models/faculty');
 const courseRoutes = require('./faculty/courses');
+const testRoutes = require('./faculty/test');
 
 router.use('/course',courseRoutes);
+router.use('/test',testRoutes);
+
 router.post('/login',function(req,res,next){
     faculty.find({faculty_email:req.body.faculty_email})
        .exec()
