@@ -30,7 +30,7 @@ router.post('/add', checkAuth, upload.single('faculty_photo'), (req, res, next) 
             const faculty = new Faculty({
                 _id: new mongoose.Types.ObjectId(),
                 faculty_name: req.body.faculty_name,
-                faculty_photo: "https://sheltered-spire-10162.herokuapp.com/" + req.file.path,
+                faculty_photo: "http://192.168.137.1:3000/uploads/faculties/" + req.file.originalname,
                 faculty_email: req.body.faculty_email,
                 faculty_password: hash,
                 faculty_contact_number: req.body.faculty_contact_number,
@@ -104,7 +104,7 @@ router.patch('/update/:faculty_id', checkAuth, upload.single('faculty_photo'),(r
 
     Faculty.update({_id: req.params.faculty_id},{$set: {
         faculty_name: req.body.faculty_name,
-        faculty_photo: "https://sheltered-spire-10162.herokuapp.com/"+req.file.path,
+        faculty_photo: "http://192.168.137.1:3000/uploads/faculties/" + req.file.originalname,
         faculty_email: req.body.faculty_email,
         faculty_contact_number: req.body.faculty_contact_number,
         faculty_educational_details: req.body.faculty_educational_details,

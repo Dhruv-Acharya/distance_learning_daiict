@@ -30,6 +30,9 @@ const upload = multer({storage: storage});
 const Student = require('./../models/student');
 const Inquiry = require('./../models/inquiry');
 
+const courseRoutes = require('./student/courses');
+
+router.use('/course',courseRoutes);
 
 router.post('/add', (req, res, next) => {
     Student.find({student_email: req.body.student_email})

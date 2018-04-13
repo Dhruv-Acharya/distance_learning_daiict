@@ -7,6 +7,7 @@ const FcTestQuestion = require('./../../models/FcTestQuestion');
 router.post('/create', (req, res, next) => {
     let quetionArray = [];
     for(que in req.body.FcTest_questions) {
+        console.log(req.body.FcTest_questions[que]);
         const question = new FcTestQuestion({
             _id : new mongoose.Schema.ObjectId(),
             FcTestQuestion_text : req.body.FcTestQuestion_text,

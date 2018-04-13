@@ -9,7 +9,7 @@ const facultyCourseSchema = mongoose.Schema({
     facultyCourse_description : String,
     facultyCourse_image : String,
     facultyCourse_ta_require : Boolean,
-    facultyCourse_ta_list : [Number],
+    facultyCourse_ta_list : [],
     facultyCourse_prerequisites : String,
     facultyCourse_subtopics:[]
 });

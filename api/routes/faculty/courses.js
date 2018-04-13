@@ -7,7 +7,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads/faculties');
+        cb(null, './uploads/facultyCourses');
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
@@ -49,8 +49,8 @@ router.post('/create', upload.any(), function (req, res, next) {
         var subtopic = new Subtopic({
             _id: new mongoose.Types.ObjectId(),
             subtopic_name: subtopic.subtopic_name,
-            subtopic_assignment: "https://sheltered-spire-10162.herokuapp.com/" + req.files[i].path,
-            subtopic_video: "https://sheltered-spire-10162.herokuapp.com/" + req.files[i + 1].path,
+            subtopic_assignment: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[i].originalname,
+            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[i + 1].originalname,
             subtopic_description: subtopic.subtopic_description,
             subtopic_weightage: subtopic.subtopic_weightage,
             subtopic_assignment_totalMarks: subtopic.subtopic__assignment_totalMarks
@@ -65,7 +65,7 @@ router.post('/create', upload.any(), function (req, res, next) {
         faculty_id: req.body.faculty_id,
         facultyCourse_duration: req.body.facultyCourse_duration,
         facultyCourse_description: req.body.facultyCourse_description,
-        facultyCourse_image: "https://sheltered-spire-10162.herokuapp.com/" + req.files[0].path,
+        facultyCourse_image: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[0].originalname,
         facultyCourse_ta_require: req.body.facultyCourse_ta_require,
         facultyCourse_ta_list: req.body.facultyCourse_ta_list,
         facultyCourse_prerequisites: req.body.facultyCourse_prerequisites,
@@ -87,8 +87,8 @@ router.patch('/update/:course_id', upload.any(), function (req, res, next) {
         var subtopic = new Subtopic({
             _id: new mongoose.Types.ObjectId(),
             subtopic_name: subtopic.subtopic_name,
-            subtopic_assignment: "https://sheltered-spire-10162.herokuapp.com/" + req.files[i].path,
-            subtopic_video: "https://sheltered-spire-10162.herokuapp.com/" + req.files[i + 1].path,
+            subtopic_assignment: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[i].originalname,
+            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[i + 1].originalname,
             subtopic_description: subtopic.subtopic_description,
             subtopic_weightage: subtopic.subtopic_weightage,
             subtopic_assignment_totalMarks: subtopic.subtopic__assignment_totalMarks
@@ -99,7 +99,7 @@ router.patch('/update/:course_id', upload.any(), function (req, res, next) {
         $set: {
             facultyCourse_duration: req.body.facultyCourse_duration,
             facultyCourse_description: req.body.facultyCourse_description,
-            facultyCourse_image: "https://sheltered-spire-10162.herokuapp.com/" + req.files[0].path,
+            facultyCourse_image: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[0].originalname,
             facultyCourse_ta_require: req.body.facultyCourse_ta_require,
             facultyCourse_ta_list: req.body.facultyCourse_ta_list,
             facultyCourse_prerequisites: req.body.facultyCourse_prerequisites,

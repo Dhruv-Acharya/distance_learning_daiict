@@ -6,7 +6,7 @@ const Course = require('../../models/course');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, './uploads/faculties');
+        cb(null, './uploads/courses');
     },
     filename: function(req, file, cb){
         cb(null, file.originalname);
@@ -49,7 +49,7 @@ router.post('/add', checkAuth, upload.single('course_photo'), function(req,res,n
     const course = new Course({
         _id : new mongoose.Types.ObjectId(),
         course_subject : req.body.course_subject,
-        course_photo : req.file.path,
+        course_photo : "http://192.168.137.1:3000/uploads/courses/"+req.file.originalname,
         course_description : req.body.course_description
     });
 course.save().then(result =>{
@@ -75,10 +75,11 @@ Course.remove({_id:req.params.course_id}).exec().then(result=>{
     });
 });
 
-router.patch('/update/:course_id', checkAuth,  function(req,res,next){
-console.log(req.body.course_subject);
+router.patch('/update/:course_id', checkAuth, upload.single('course_photo'), function(req,res,next){
     Course.update({_id: req.params.course_id},{$set: {
-        course_subject : req.body.course_subject} })
+        course_subject : req.body.course_subject,
+        course_description : req.body.course_description,
+        course_photo : "http://192.168.137.1:3000/uploads/courses/" + req.file.originalname} })
         .exec()
         .then(result => {
                 res.status(200).json({
