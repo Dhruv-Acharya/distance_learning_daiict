@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage:storage});
 const Teaching_Assistant = require('../models/teachingAssistant');
 
-
+//add TA
 router.post('/add', (req, res, next) => {
     bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
         if (err) {
@@ -62,6 +62,7 @@ router.post('/add', (req, res, next) => {
     })
 });
 
+//update TA
 router.patch('/update/:ta_id',checkAuth, upload.single('ta_photo') , (req, res, next) => {
 
             const TA = new Teaching_Assistant({
@@ -85,7 +86,6 @@ router.patch('/update/:ta_id',checkAuth, upload.single('ta_photo') , (req, res, 
                         error: err
                     })});
 });
-
 
 // Login
 router.post('/login',(req,res,next)=>{
@@ -206,6 +206,7 @@ router.post('/forgotpassword',function(req,res,next){
         res.redirect('/forgotpassword');
     });
 });
+//reset Password
 router.get('/reset/:token',function(req,res){
     console.log(req.params.token);
     Teaching_Assistant.findOne({ta_resetPasswordToken:req.params.token,ta_resetPasswordExpires:{$gt:Date.now()}},function(err,user){

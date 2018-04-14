@@ -29,11 +29,13 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const Student = require('./../models/student');
 const Inquiry = require('./../models/inquiry');
+const Complaint = require('./../models/complaint');
 
 const courseRoutes = require('./student/courses');
 
 router.use('/course', courseRoutes);
 
+//add student
 router.post('/add', (req, res, next) => {
     Student.find({student_email: req.body.student_email})
         .exec()
@@ -76,21 +78,23 @@ router.post('/add', (req, res, next) => {
         );
 });
 
+//student inquiry
 router.post('/inquiry', (req, res, next) => {
     const inquiry = new Inquiry({
-        inquiry_title : req.body.inquiry_title,
-        inquiry_email : req.body.inquiry_email,
-        inquiry_date_posted : Date.now(),
+        inquiry_title: req.body.inquiry_title,
+        inquiry_email: req.body.inquiry_email,
+        inquiry_date_posted: Date.now(),
     });
     inquiry.save()
         .then(result => {
-        res.status(200).json("success");
-    })
+            res.status(200).json("success");
+        })
         .catch(err => {
             res.status(500).json(err);
         });
 });
 
+//student data display
 router.get('/view/:student_id', (req, res, next) => {
     Student.find({_id: req.params.student_id}).exec()
         .then(result => {
@@ -108,6 +112,7 @@ router.get('/view/:student_id', (req, res, next) => {
         });
 });
 
+//student login
 router.post('/login', (req, res, next) => {
     Student.find({student_email: req.body.student_email})
         .exec()
@@ -151,6 +156,24 @@ router.post('/login', (req, res, next) => {
             res.status(500).json({
                 error: err
             });
+        });
+});
+
+router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
+    const complaint = new Complaint({
+        _id : new mongoose.Types.ObjectId(),
+        complaint_title : req.body.complaint_title,
+        complaint_description : req.body.complaint_description,
+        student_id :  req.userData.student_id,
+        FC_id :  req.params.FC_id,
+        complaint_date_posted : Date.now()
+    });
+    complaint.save().exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            res.status(500).json(err)
         });
 });
 
@@ -226,18 +249,6 @@ router.post('/forgotpassword', function (req, res, next) {
         if (err) return next(err);
         res.redirect('/forgotpassword');
     });
-});
-
-router.post('/inquiry', (req, res, next) => {
-    const inquiry = new Inquiry({
-        inquiry_title: req.body.inquiry_title,
-        inquiry_email: req.body.inquiry_email,
-        inquiry_date_posted: Date.now(),
-    });
-    inquiry.save().then(result => {
-        res.status(200).json(result);
-    })
-        .catch(err => res.status(500).json(err));
 });
 
 router.get('/reset/:token', function (req, res) {
@@ -373,7 +384,7 @@ router.get('/logout', (req, res, next) => {
 });
 */
 
-router.post('/reset/', function (req, res) {
+router.post('/reset', function (req, res) {
     async.waterfall([
         function (done) {
             Student.findOne({
@@ -382,9 +393,9 @@ router.post('/reset/', function (req, res) {
             }, function (err, user) {
                 if (!user) {
                     console.log('error..Password reset token is invalid or has expired.');
-                    return res.redirect('back');
                 }
                 if (req.body.password === req.body.confirmpassword) {
+                    console.log(user);
                     user.student_password = req.body.password;
                     bcrypt.hash(user.student_password, 10, (err, hash) => {
                         //console.log(user.ta_password);
