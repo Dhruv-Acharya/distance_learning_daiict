@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const inquirySchema = mongoose.Schema({
+const feedbackSchema = mongoose.Schema({
     _id : mongoose.Schema.ObjectId,
     feedback_title : String,
     feedback_description : String,
