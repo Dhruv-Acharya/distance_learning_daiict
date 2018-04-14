@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+
 const FacultyCourse = require('../../models/facultyCourse');
 const Subtopic = require('../../models/subtopic');
-const multer = require('multer');
+const TeachingAssistant = require('./../../models/teachingAssistant');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -15,6 +17,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+//view general courses
 router.get('/view', function (req, res, next) {
     FacultyCourse.find().exec().then(result => {
 
@@ -29,6 +32,18 @@ router.get('/view', function (req, res, next) {
     });
 });
 
+//get TA list for create course
+router.get('/getTA', (req, res, next) => {
+    TeachingAssistant.find().exec()
+        .then(result => {
+            res.status(200).json({result});
+        })
+        .catch(err => {
+            res.status(500).json({err});
+        });
+});
+
+//view sub courses
 router.get('/view/:course_id', function (req, res, next) {
     FacultyCourse.find({ _id: req.params.course_id }).exec().then(result => {
         if (!result.length) res.status(404).json({
@@ -40,6 +55,19 @@ router.get('/view/:course_id', function (req, res, next) {
     });
 });
 
+//view specific subcourse
+router.get('/view/:FC_id', function (req, res, next) {
+    FacultyCourse.find({_id: req.params.FC_id}).exec().then(result => {
+        if (!result.length) res.status(404).json({
+            message: "data not found"
+        });
+        else res.status(200).json(result);
+    }).catch(err => {
+        res.status(500).json(err);
+    });
+});
+
+//create courses
 router.post('/create', upload.any(), function (req, res, next) {
     //console.log(req);
     var subtopicArray = [];
@@ -97,6 +125,7 @@ router.post('/create', upload.any(), function (req, res, next) {
     }
 });
 
+//update course
 router.patch('/update/:course_id', upload.any(), function (req, res, next) {
     //console.log(req);
     var subtopicArray = [];
@@ -150,6 +179,7 @@ router.patch('/update/:course_id', upload.any(), function (req, res, next) {
     }
 });
 
+//delete course
 router.delete('/delete/:course_id', function (req, res, next) {
     FacultyCourse.remove({ _id: req.params.course_id })
         .exec()

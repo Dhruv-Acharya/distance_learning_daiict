@@ -29,11 +29,13 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const Student = require('./../models/student');
 const Inquiry = require('./../models/inquiry');
+const Complaint = require('./../models/complaint');
 
 const courseRoutes = require('./student/courses');
 
-router.use('/course',courseRoutes);
+router.use('/course', courseRoutes);
 
+//add student
 router.post('/add', (req, res, next) => {
     Student.find({student_email: req.body.student_email})
         .exec()
@@ -76,8 +78,24 @@ router.post('/add', (req, res, next) => {
         );
 });
 
+//student inquiry
+router.post('/inquiry', (req, res, next) => {
+    const inquiry = new Inquiry({
+        inquiry_title: req.body.inquiry_title,
+        inquiry_email: req.body.inquiry_email,
+        inquiry_date_posted: Date.now(),
+    });
+    inquiry.save()
+        .then(result => {
+            res.status(200).json("success");
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+
+//student data display
 router.get('/view/:student_id', (req, res, next) => {
-    console.log(req.params.student_id);
     Student.find({_id: req.params.student_id}).exec()
         .then(result => {
             if (result.length >= 0) {
@@ -94,6 +112,7 @@ router.get('/view/:student_id', (req, res, next) => {
         });
 });
 
+//student login
 router.post('/login', (req, res, next) => {
     Student.find({student_email: req.body.student_email})
         .exec()
@@ -137,6 +156,24 @@ router.post('/login', (req, res, next) => {
             res.status(500).json({
                 error: err
             });
+        });
+});
+
+router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
+    const complaint = new Complaint({
+        _id : new mongoose.Types.ObjectId(),
+        complaint_title : req.body.complaint_title,
+        complaint_description : req.body.complaint_description,
+        student_id :  req.userData.student_id,
+        FC_id :  req.params.FC_id,
+        complaint_date_posted : Date.now()
+    });
+    complaint.save().exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            res.status(500).json(err)
         });
 });
 
@@ -214,18 +251,6 @@ router.post('/forgotpassword', function (req, res, next) {
     });
 });
 
-router.post('/inquiry', (req, res, next) => {
-    const inquiry = new Inquiry({
-        inquiry_title: req.body.inquiry_title,
-        inquiry_email: req.body.inquiry_email,
-        inquiry_date_posted: Date.now(),
-    });
-    inquiry.save().then(result => {
-        res.status(200).json(result);
-    })
-        .catch(err => res.status(500).json(err));
-});
-
 router.get('/reset/:token', function (req, res) {
     console.log(req.params.token);
     Student.findOne({
@@ -240,7 +265,7 @@ router.get('/reset/:token', function (req, res) {
         //res.render('reset',{token:req.params.token});
     });
 });
-
+/*
 router.post('/reset/:token', function (req, res) {
     async.waterfall([
         function (done) {
@@ -356,6 +381,118 @@ router.get('/logout', (req, res, next) => {
     req.logout();
     req.flash("Sucess", "See you later!");
     req.redirect('/login');
+});
+*/
+
+router.post('/reset', function (req, res) {
+    async.waterfall([
+        function (done) {
+            Student.findOne({
+                student_resetPasswordToken: req.body.token,
+                student_resetPasswordExpires: {$gt: Date.now()}
+            }, function (err, user) {
+                if (!user) {
+                    console.log('error..Password reset token is invalid or has expired.');
+                }
+                if (req.body.password === req.body.confirmpassword) {
+                    console.log(user);
+                    user.student_password = req.body.password;
+                    bcrypt.hash(user.student_password, 10, (err, hash) => {
+                        //console.log(user.ta_password);
+                        if (err) {
+                            return res.status(500).json({
+                                error: err
+                            });
+                        } else {
+                            user.student_password = hash;
+                            student_email = user.student_email;
+                            student_name = user.student_name;
+                            student_contact_number = user.student_contact_number;
+                            console.log(hash);
+
+                            user.save()
+                                .then(result => {
+                                    console.log(result);
+                                    res.status(201).json({
+                                        message: 'your password has been changed'
+                                    });
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    res.status(500).json({
+                                        error: err
+                                    });
+                                });
+                            var sendtransport = nodemailer.createTransport(smtpTransport({
+                                host: 'localhost',
+                                port: 3000,
+                                secure: 'false',
+                                service: 'Gmail',
+                                auth: {
+                                    user: 'team11novice@gmail.com',
+                                    pass: process.env.GMAILPW
+                                },
+                                tls: {
+                                    rejectUnauthorized: false
+                                }
+                            }));
+                            var mailOptions = {
+                                to: user.student_email,
+                                from: 'team11novice@gmail.com',
+                                subject: 'Your password has been changed',
+                                text: 'Hello,\n\n' +
+                                'This is a confirmation that the password for your account ' + user.ta_email + 'has been changed.\n'
+                            };
+                            sendtransport.sendMail(mailOptions, function (err) {
+                                console.log('Your password has been changed successfully');
+                                done(err);
+                            });
+
+                        }
+
+                    });
+                    user.student_resetPasswordToken = undefined;
+                    user.student_resetPasswordExpires = undefined;
+                    user.save(function (err) {
+                        console.log(user);
+                        console.log(err);
+                    });
+
+                } else {
+                    console.log('error..Password do not match');
+                    return res.redirect('back');
+                }
+            });
+        },
+        // (user,done)=>{
+        //     var transport=nodemailer.createTransport(smtpTransport({
+        //         host:'localhost',
+        //         port:3000,
+        //         secure:'false',
+        //         service:'Gmail',
+        //         auth:{
+        //             user:'team11novice@gmail.com',
+        //             pass:process.env.GMAILPW
+        //         },
+        //         tls:{
+        //             rejectUnauthorized:false
+        //         }
+        //     }));
+        //     var mailOptions={
+        //         to:user.ta_email,
+        //         from:'team11novice@gmail.com',
+        //         subject:'Your password has been changed',
+        //         text:'Hello,\n\n'+
+        //              'This is a confirmation that the password for your account '+user.ta_email+'has been changed.\n'
+        //     };
+        //     transport.sendMail(mailOptions,function(err){
+        //         console.log('Your password has been changed successfully');
+        //         done(err);
+        //     });
+        // }
+    ], function (err) {
+        //res.redirect('/login');
+    });
 });
 
 // Edit Profile
