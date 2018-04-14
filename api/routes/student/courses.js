@@ -10,7 +10,7 @@ const Course = require('../../models/course');
 const FacultyCourse = require('../../models/facultyCourse');
 const Subtopic = require('../../models/subtopic');
 const Complaint = require('./../../models/complaint');
-const Complaint = require('./../../models/feedback');
+const feedback = require('./../../models/feedback');
 
 //enroll
 router.post('/student/enrollment/:fc_id/:student_id',checkAuth,(req, res, next) => {
