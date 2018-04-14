@@ -10,10 +10,10 @@ router.post('/create', (req, res, next) => {
         console.log(req.body.FcTest_questions[que]);
         const question = new FcTestQuestion({
             _id : new mongoose.Schema.ObjectId(),
-            FcTestQuestion_text : req.body.FcTestQuestion_text,
-            FcTestQuestion_type : req.body.FcTestQuestion_type,
-            FcTestQuestion_answers : req.body.FcTestQuestion_answers,
-            FcTestQuestion_answer : req.body.FcTestQuestion_answer
+            FcTestQuestion_text : req.body.FcTest_questions[que].FcTestQuestion_text,
+            FcTestQuestion_type : req.body.FcTest_questions[que].FcTestQuestion_type,
+            FcTestQuestion_answers : req.body.FcTest_questions[que].FcTestQuestion_answers,
+            FcTestQuestion_answer : req.body.FcTest_questions[que].FcTestQuestion_answer
         });
         question.save()
             .then(quetionArray.push(question._id))
