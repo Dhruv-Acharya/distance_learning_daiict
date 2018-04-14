@@ -12,23 +12,23 @@ const FacultyCourse = require('../../models/facultyCourse');
 const Complaint = require('./../../models/complaint');
 
 //enroll
-router.post('/student/enrollment/:fc_id/:student_id',checkAuth,(req, res, next) => {
+router.post('/student/enrollment/:FC_id',checkAuth,(req, res, next) => {
     Enrollment.find({student_id:req.params.student_id})
         .exec()
         .then(data=>{
             if(!data.length){
                 const enroll=new Enrollment({
                     _id : mongoose.Schema.ObjectId(),
-                    student_id : req.params.student_id,
+                    student_id : req.userData.student_id,
                     enrollment_course:{
-                        fc_id:req.params.fc_id,
+                        FC_id:req.params.FC_id,
                         date:Date.now()
                     }
                 })
             }else{
                 const enrollment_course = data.enrollment_course;
                 enrollment_course.push({
-                    fc_id:req.params.fc_id,
+                    FC_id:req.params.FC_id,
                     date:Date.now()
                 });
                 Enrollment.update({student_id:req.params.student_id},{$set: {

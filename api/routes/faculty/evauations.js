@@ -44,8 +44,6 @@ router.get('/evaluation/:faculty_id/:FC_id/:student_id', function (req, res, nex
 });
 
 
-
-
 router.delete('/delete/:course_id', function (req, res, next) {
     FacultyCourse.remove({ _id: req.params.course_id })
         .exec()
