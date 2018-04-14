@@ -7,6 +7,7 @@ const checkAuth = require('./../../middleware/check-auth');
 
 const Enrollment = require('../../models/enrollment');
 const Course = require('../../models/course');
+const FacultyCourse = require('../../models/facultyCourse');
 
 //enroll
 router.post('/student/enrollment/:fc_id/:student_id',checkAuth,(req, res, next) => {
@@ -56,12 +57,18 @@ router.get('/view', function (req, res, next) {
 
 //view sub courses
 router.get('/view/:course_id', function (req, res, next) {
+    console.log("hello world"+req.params.course_id);
     FacultyCourse.find({course_id: req.params.course_id}).exec().then(result => {
         if (!result.length) res.status(404).json({
             message: "data not found"
         });
-        else res.status(200).json(result);
+        else {
+        console.log(result);
+            res.status(200).json(result);
+        }
+
     }).catch(err => {
+        console.log(err);
         res.status(500).json(err);
     });
 });
