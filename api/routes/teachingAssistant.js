@@ -60,23 +60,21 @@ router.post('/add', (req, res, next) => {
                     error: err
                 })});
         }
-    })
+    });
 });
 
 //update TA
 router.patch('/update/:ta_id',checkAuth, upload.single('ta_photo') , (req, res, next) => {
 
-            const TA = new Teaching_Assistant({
+            Teaching_Assistant.update({_id : req.params.ta_id},{$set : {
                 ta_name: req.body.ta_name,
                 ta_photo: "https://sheltered-spire-10162.herokuapp.com" + req.file.path,
                 ta_email: req.body.ta_email,
                 ta_contact_number: req.body.ta_contact_number,
                 ta_educational_details: req.body.ta_educational_details
-            });
-
-            TA.update().then(result => {
+            }}).then(result => {
                 res.status(200).json({
-                    message: "Data Inserted Successfully!",
+                    message: "Data updated Successfully!",
                     data: result
                 });
             })
@@ -191,7 +189,7 @@ router.post('/forgotpassword',function(req,res,next){
                 to: user.ta_email,
                 from: 'team11novice@gmail.com',
                 subject: 'Node.js Password Reset',
-                text: 'You are receiving this because you have requested the reset  os the password'+
+                text: 'You are receiving this because you have requested the reset of the password'+
                 ' Please click on the following link, or paste this into your browser to complete the process\n '+
                 'http://'+req.headers.host+'/reset/'+token+'\n\n'+
                 'If you did not request this, please ignore this email and your password will remail unchanged'
