@@ -81,7 +81,7 @@ router.post('/create', upload.any(), function (req, res, next) {
             _id: new mongoose.Types.ObjectId(),
             subtopic_name: subtopics[index].subtopic_name,
             subtopic_assignment: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux].originalname,
-            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux].originalname,
+            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux+1].originalname,
             subtopic_description: subtopics[index].subtopic_description,
             subtopic_weightage: subtopics[index].subtopic_weightage,
             subtopic_assignment_totalMarks: subtopics[index].subtopic__assignment_totalMarks
@@ -122,6 +122,7 @@ router.post('/create', upload.any(), function (req, res, next) {
             console.log(error);
         });
         console.log("<-_->Altair");
+    aux+=2;
     }
 });
 
@@ -139,7 +140,7 @@ router.patch('/update/:course_id', upload.any(), function (req, res, next) {
             _id: new mongoose.Types.ObjectId(),
             subtopic_name: subtopics[index].subtopic_name,
             subtopic_assignment: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux].originalname,
-            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux].originalname,
+            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux+1].originalname,
             subtopic_description: subtopics[index].subtopic_description,
             subtopic_weightage: subtopics[index].subtopic_weightage,
             subtopic_assignment_totalMarks: subtopics[index].subtopic__assignment_totalMarks
