@@ -66,17 +66,7 @@ router.post('/login',function(req,res,next){
 });
 
 router.patch('/update/:faculty_id', upload.single('faculty_photo'), (req, res, next) => {
-
-    bcrypt.hash(req.body.faculty_password, 10 , (err,hash)=>{
-        if(err)
-        {
-            res.status(500).json({
-                message : "something went wrong",
-            error : err
-        });
-        }
-        else 
-        {
+            
             Faculty.update({_id: req.params.faculty_id}, {$set: {
                 faculty_name: req.body.faculty_name,
                 faculty_photo: "https://sheltered-spire-10162.herokuapp.com" + req.file.originalname,
@@ -98,8 +88,6 @@ router.patch('/update/:faculty_id', upload.single('faculty_photo'), (req, res, n
                         error: err
                     });
                 });
-        }    
-    });
     
 });
 
