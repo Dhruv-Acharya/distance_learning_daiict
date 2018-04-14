@@ -29,7 +29,6 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const Student = require('./../models/student');
 const Inquiry = require('./../models/inquiry');
-const Complaint = require('./../models/complaint');
 
 const courseRoutes = require('./student/courses');
 
@@ -83,7 +82,8 @@ router.post('/inquiry', (req, res, next) => {
     const inquiry = new Inquiry({
         inquiry_title: req.body.inquiry_title,
         inquiry_email: req.body.inquiry_email,
-        inquiry_date_posted: Date.now(),
+        inquiry_date_posted : Date.now(),
+        inquiry_description : req.body.inquiry_description
     });
     inquiry.save()
         .then(result => {
@@ -156,24 +156,6 @@ router.post('/login', (req, res, next) => {
             res.status(500).json({
                 error: err
             });
-        });
-});
-
-router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
-    const complaint = new Complaint({
-        _id : new mongoose.Types.ObjectId(),
-        complaint_title : req.body.complaint_title,
-        complaint_description : req.body.complaint_description,
-        student_id :  req.userData.student_id,
-        FC_id :  req.params.FC_id,
-        complaint_date_posted : Date.now()
-    });
-    complaint.save().exec()
-        .then(result => {
-            res.status(200).json(result);
-        })
-        .catch(err => {
-            res.status(500).json(err)
         });
 });
 

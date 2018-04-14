@@ -9,6 +9,8 @@ const Enrollment = require('../../models/enrollment');
 const Course = require('../../models/course');
 const FacultyCourse = require('../../models/facultyCourse');
 
+const Complaint = require('./../../models/complaint');
+
 //enroll
 router.post('/student/enrollment/:fc_id/:student_id',checkAuth,(req, res, next) => {
     Enrollment.find({student_id:req.params.student_id})
@@ -86,6 +88,23 @@ router.get('/view/:FC_id', function (req, res, next) {
     });
 });
 
+router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
+    const complaint = new Complaint({
+        _id : new mongoose.Types.ObjectId(),
+        complaint_title : req.body.complaint_title,
+        complaint_description : req.body.complaint_description,
+        student_id :  req.userData.student_id,
+        FC_id :  req.params.FC_id,
+        complaint_date_posted : Date.now()
+    });
+    complaint.save().exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        });
+});
 
 
 module.exports = router;
