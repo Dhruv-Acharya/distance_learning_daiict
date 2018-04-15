@@ -44,9 +44,6 @@ router.get('/evaluation/:FC_id/:student_id', function (req, res, next) {
     });
 });
 
-
-
-
 router.delete('/delete/:course_id', function (req, res, next) {
     FacultyCourse.remove({ _id: req.params.course_id })
         .exec()
@@ -55,6 +52,22 @@ router.delete('/delete/:course_id', function (req, res, next) {
         })
         .catch(err => {
             res.status(500).json(err);
+        });
+});
+
+router.get('/enrolled', (req, res, next) => {
+    let FC_Array =[];
+    Enrollment.find({student_id : req.userData.student_id}).exec()
+        .then(result => {
+            for (let i = 0; i < result.length; i++) {
+                FC_Array.push((result[i].enrollment_course[0].FC_id));
+                console.log(result[i].enrollment_course[0].FC_id);
+            }console.log(FC_Array);
+            FacultyCourse.find({_id : { $in : FC_Array}}).exec()
+                .then(result1 => {
+                    res.status(200).json(result1);
+                    console.log(result1);
+                });
         });
 });
 module.exports = router;

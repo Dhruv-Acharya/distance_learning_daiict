@@ -80,7 +80,7 @@ router.get('/view/:course_id', function (req, res, next) {
 });
 
 //view specific subcourse
-router.get('/view/:FC_id', function (req, res, next) {
+router.get('/facultyCourse/:FC_id', function (req, res, next) {
     FacultyCourse.find({_id: req.params.FC_id}).exec().then(result => {
         if (!result.length) res.status(404).json({
             message: "data not found"
@@ -92,7 +92,7 @@ router.get('/view/:FC_id', function (req, res, next) {
 });
 
 //get subtopic details
-router.get('/view/:subtopic_id', checkAuth, (req, res, next) => {
+router.get('/subtopics/:subtopic_id', checkAuth, (req, res, next) => {
     Subtopic.find({_id : req.params.subtopic_id}).exec()
         .then(result => {
             res.status(200).json(result);
@@ -129,7 +129,7 @@ router.get('/enrolled', checkAuth, (req, res, next) => {
                     console.log(result1);
                 });
         });
-})
+});
 
 router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
     const complaint = new Complaint({
