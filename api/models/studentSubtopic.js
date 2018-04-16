@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const subtopic = require('subtopic');
 
 const studentSubtopicSchema = mongoose.Schema({
     _id : mongoose.Schema.ObjectId,
