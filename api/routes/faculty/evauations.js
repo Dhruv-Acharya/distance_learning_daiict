@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+
+const checkAuth = require('./../../middleware/check-auth');
 const FacultyCourse = require('../../models/facultyCourse');
 const studentSubtopic = require('../../models/studentSubtopic');
 const Subtopic = require('../../models/subtopic');
 
 
-router.get('/evaluation/:faculty_id', function (req, res, next) {
-    FacultyCourse.find({faculty_id : req.params.faculty_id}).exec().then(result => {
+router.get('/view', checkAuth, function (req, res, next) {
+    FacultyCourse.find({faculty_id : req.userData.faculty_id}).exec().then(result => {
         if (result.length < 0) res.status(404).json({
             message: "data not found"
         });

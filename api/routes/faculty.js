@@ -1,10 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 const Faculty = require('../models/faculty');
+
 const courseRoutes = require('./faculty/courses');
 const testRoutes = require('./faculty/test');
-const multer = require('multer');
+const evaluationRoutes = require('./faculty/evauations');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -23,6 +28,7 @@ const upload = multer({storage:storage});
 
 router.use('/course',courseRoutes);
 router.use('/test',testRoutes);
+router.use('/evaluation',evaluationRoutes);
 
 router.post('/login',function(req,res,next){
     Faculty.find({faculty_email:req.body.faculty_email})

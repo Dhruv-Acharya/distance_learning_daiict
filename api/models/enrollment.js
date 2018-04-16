@@ -4,7 +4,8 @@ const enrollmentSchema =mongoose.Schema({
     student_id:mongoose.Schema.ObjectId,
     enrollment_course:[{
         FC_id:mongoose.Schema.ObjectId,
-        date:Date
+        date:Date,
+
     }]
 });
 module.exports =  mongoose.model('enrollment', enrollmentSchema);

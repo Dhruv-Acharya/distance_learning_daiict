@@ -80,6 +80,7 @@ router.post('/add', (req, res, next) => {
 //student inquiry
 router.post('/inquiry', (req, res, next) => {
     const inquiry = new Inquiry({
+        _id : new mongoose.Types.ObjectId(),
         inquiry_title: req.body.inquiry_title,
         inquiry_email: req.body.inquiry_email,
         inquiry_date_posted : Date.now(),

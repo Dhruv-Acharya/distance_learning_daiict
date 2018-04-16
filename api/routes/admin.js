@@ -9,12 +9,14 @@ require('./../../env');
 const facultyRoutes = require('./admin/faculties');
 const studentRoutes = require('./admin/students');
 const courseRoutes = require('./admin/courses');
+const complaintRoutes = require('./admin/complaints');
 const inquiryRoutes = require('./admin/inquiries');
 
 router.use('/faculty',facultyRoutes);
 router.use('/student',studentRoutes);
 router.use('/course',courseRoutes);
 router.use('/inquiry',inquiryRoutes);
+router.use('/complain',complaintRoutes)
 
 router.post('/login',function(req,res,next){
     Admin.find({admin_email:req.body.admin_email})

@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const checkAuth = require('./../../middleware/check-auth');
 
 const FacultyCourse = require('../../models/facultyCourse');
 const Subtopic = require('../../models/subtopic');
 const TeachingAssistant = require('./../../models/teachingAssistant');
+const Course = require('./../../models/course');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -26,6 +28,28 @@ router.get('/view', function (req, res, next) {
         });
         else res.status(200).json(result);
     }).catch(err => {
+        res.status(500).json({
+            error: err
+        });
+    });
+});
+
+//view general courses
+router.get('/basic', checkAuth, function (req, res, next) {
+    Course.find().exec().then(result => {
+
+        if (!result.length) res.status(404).json({
+            message: "data not found"
+        });
+        else
+        {
+            console.log(result);
+            res.status(200).json({
+                data : result
+            });
+        }
+    }).catch(err => {
+        console.log("<-_->Altair got some error")
         res.status(500).json({
             error: err
         });

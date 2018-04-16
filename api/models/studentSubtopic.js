@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const studentSubtopicSchema = mongoose.Schema({
     _id : mongoose.Schema.ObjectId,
-    FC_id : mongoose.Schema.ObjectId,
     subtopic_id : mongoose.Schema.ObjectId,
     student_id : mongoose.Schema.ObjectId,
     subtopic_assignment_submission : String,
