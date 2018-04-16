@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Subtopic = require('./subtopic');
 
 const facultyCourseSchema = mongoose.Schema({
     _id: mongoose.Schema.ObjectId,
@@ -11,7 +12,7 @@ const facultyCourseSchema = mongoose.Schema({
     facultyCourse_ta_require : Boolean,
     facultyCourse_ta_list : [],
     facultyCourse_prerequisites : String,
-    facultyCourse_subtopics:[]
+    facultyCourse_subtopics:[mongoose.Schema.ObjectId]
 });
 
 module.exports =  mongoose.model('FacultyCourse', facultyCourseSchema);

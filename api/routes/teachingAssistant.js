@@ -29,6 +29,7 @@ const Teaching_Assistant = require('../models/teachingAssistant');
 
 //add TA
 router.post('/add', (req, res, next) => {
+    console.log(req.body);
     bcrypt.hash(req.body.ta_password, 10, (err, hash) => {
         if (err) {
             console.log(err);
@@ -59,7 +60,7 @@ router.post('/add', (req, res, next) => {
                     error: err
                 })});
         }
-    })
+    });
 });
 
 //get TA info
@@ -196,7 +197,7 @@ router.post('/forgotpassword',function(req,res,next){
                 to: user.ta_email,
                 from: 'team11novice@gmail.com',
                 subject: 'Node.js Password Reset',
-                text: 'You are receiving this because you have requested the reset  os the password'+
+                text: 'You are receiving this because you have requested the reset of the password'+
                 ' Please click on the following link, or paste this into your browser to complete the process\n '+
                 'http://'+req.headers.host+'/reset/'+token+'\n\n'+
                 'If you did not request this, please ignore this email and your password will remail unchanged'

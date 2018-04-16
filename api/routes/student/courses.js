@@ -8,10 +8,12 @@ const checkAuth = require('./../../middleware/check-auth');
 const Enrollment = require('../../models/enrollment');
 const Course = require('../../models/course');
 const FacultyCourse = require('../../models/facultyCourse');
+
 const Subtopic = require('./../../models/subtopic');
 const studentSubtopic = require('./../../models/studentSubtopic');
 const FcTest = require('./../../models/FcTest');
 const Complaint = require('./../../models/complaint');
+const feedback = require('./../../models/feedback');
 
 //enroll
 router.post('/enrollment/:FC_id', checkAuth,(req, res, next) => {
@@ -27,6 +29,7 @@ router.post('/enrollment/:FC_id', checkAuth,(req, res, next) => {
                         date:Date.now()
                     }
                 });
+
                 enroll.save().exec()
                     .then(result => {
                         res.status(200).json(result);
@@ -42,7 +45,7 @@ router.post('/enrollment/:FC_id', checkAuth,(req, res, next) => {
                 });
                 Enrollment.update({student_id:req.params.student_id},{$set: {
                         enrollment_course:enrollment_course
-                    }})
+                    }});
             }
         })
         .catch(err => res.status(500).json({
@@ -185,5 +188,22 @@ router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
         });
 });
 
+//feedback
+router.post('/feedback/:FC_id', checkAuth, (req, res, next) => {
+    const feedback = new Feedback({
+        _id : new mongoose.Types.ObjectId(),
+        feedback_title : req.body.feedback_title,
+        feedback_description : req.body.feedback_description,
+        FC_id :  req.params.FC_id,
+        feedback_date_posted : Date.now()
+    });
+    feedback.save().exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        });
+});
 
 module.exports = router;

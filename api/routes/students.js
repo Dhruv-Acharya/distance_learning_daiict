@@ -87,10 +87,12 @@ router.post('/inquiry', (req, res, next) => {
     });
     inquiry.save()
         .then(result => {
-            res.status(200).json("success");
+            res.status(200).json({ message : "Saved successfully"});
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({
+                error : err, 
+                message : "we hate to admit but something went wrong, try something better next time"});
         });
 });
 
@@ -166,6 +168,7 @@ router.delete('/delete/:student_id', (req, res, next) => {
         .then(result => {
             res.status(200).json({
                 message: 'User successfully deleted'
+   
             });
         })
         .catch(err => {

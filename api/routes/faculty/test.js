@@ -5,21 +5,80 @@ const FcTest = require('./../../models/FcTest');
 const FcTestQuestion = require('./../../models/FcTestQuestion');
 
 router.post('/create', (req, res, next) => {
-    let quetionArray = [];
-    for(que in req.body.FcTest_questions) {
-        console.log(req.body.FcTest_questions[que]);
+    let questionArray = [];
+    var count=0;
+    var fctestque = JSON.parse(req.body.FcTest_questions);
+    for(que in fctestque) {
+        
         const question = new FcTestQuestion({
             _id : new mongoose.Schema.ObjectId(),
-            FcTestQuestion_text : req.body.FcTestQuestion_text,
-            FcTestQuestion_type : req.body.FcTestQuestion_type,
-            FcTestQuestion_answers : req.body.FcTestQuestion_answers,
-            FcTestQuestion_answer : req.body.FcTestQuestion_answer
+            FcTestQuestion_text : fctestque[que].FcTestQuestion_text,
+            FcTestQuestion_type : fctestque[que].FcTestQuestion_type,
+            FcTestQuestion_answers : fctestque[que].FcTestQuestion_answers,
+            FcTestQuestion_answer : fctestque[que].FcTestQuestion_answer
         });
         question.save()
-            .then(quetionArray.push(question._id))
-            .catch(err => {err});
-    }
-    console.log(quetionArray);
+            .then(data=>{
+                questionArray.push(data._id);
+                count++;
+                if(count==fctestque.length)
+                {
+                    fctest = new FcTest({
+                        _id: new mongoose.Schema.ObjectId(),
+                        FC_id : req.body.FC_id,
+                        FcTest_questions : questionArray
+                    });
+                    fctest.save().then(data=>{
+                        res.status(200).json({message: "the test creation was successful"});
+                    }).catch(err=>{
+                        res.status(500).json({error : err, message : "Try something better next time"});
+                    });
+                }
+            })
+            .catch(err => {
+                res.json(500).json({
+                message: "the test creation was not successful"
+            });
+    });
+}
+    console.log(questionArray);
+});
+
+router.patch('/update/:FcTest_id', (req, res, next) => {
+    let questionArray = [];
+    var count=0;
+    var fctestque = JSON.parse(req.body.FcTest_questions);
+    for(que in fctestque) {
+        
+        const question = new FcTestQuestion({
+            _id : new mongoose.Schema.ObjectId(),
+            FcTestQuestion_text : fctestque[que].FcTestQuestion_text,
+            FcTestQuestion_type : fctestque[que].FcTestQuestion_type,
+            FcTestQuestion_answers : fctestque[que].FcTestQuestion_answers,
+            FcTestQuestion_answer : fctestque[que].FcTestQuestion_answer
+        });
+        question.save()
+            .then(data=>{
+                questionArray.push(data._id);
+                count++;
+                if(count==fctestque.length)
+                {
+                    FcTest.update({_id : req.params.FcTest_id},{$set : {
+                        FcTest_questions : questionArray
+                    }}).then(data=>{
+                        res.status(200).json({message: "the test was updated successful"});
+                    }).catch(err=>{
+                        res.status(500).json({error : err, message : "Try something better next time"});
+                    });
+                }
+            })
+            .catch(err => {
+                res.json(500).json({
+                message: "the test updation was not successful"
+            });
+    });
+}
+    console.log(questionArray);
 });
 
 module.exports = router;
