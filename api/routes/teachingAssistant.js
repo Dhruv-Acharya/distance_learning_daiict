@@ -62,20 +62,26 @@ router.post('/add', (req, res, next) => {
     })
 });
 
+//get TA info
+router.get('/view', checkAuth, (req, res,next)=>{
+    Teaching_Assistant.find({_id : req.userData.ta_id}).then(data=>{
+        res.status(200).json({data});
+    }).catch(err=>{
+       res.status(500).json({error : err});
+    });
+});
+
 //update TA
-router.patch('/update/:ta_id',checkAuth, upload.single('ta_photo') , (req, res, next) => {
-
-            const TA = new Teaching_Assistant({
-                ta_name: req.body.ta_name,
-                ta_photo: "https://sheltered-spire-10162.herokuapp.com" + req.file.path,
-                ta_email: req.body.ta_email,
-                ta_contact_number: req.body.ta_contact_number,
-                ta_educational_details: req.body.ta_educational_details
-            });
-
-            TA.update().then(result => {
+router.patch('/update',checkAuth, upload.single('ta_photo') , (req, res, next) => {
+            Teaching_Assistant.update({_id : req.userData.ta_id}, {$set : {
+                    ta_name: req.body.ta_name,
+                    ta_photo: "http://192.168.137.1:3000/uploads/teachingAssistant" + req.file.originalname,
+                    ta_email: req.body.ta_email,
+                    ta_contact_number: req.body.ta_contact_number,
+                    ta_educational_details: req.body.ta_educational_details
+                }}).then(result => {
                 res.status(200).json({
-                    message: "Data Inserted Successfully!",
+                    message: "Data updated Successfully!",
                     data: result
                 });
             })

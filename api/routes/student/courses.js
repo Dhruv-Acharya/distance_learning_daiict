@@ -9,7 +9,8 @@ const Enrollment = require('../../models/enrollment');
 const Course = require('../../models/course');
 const FacultyCourse = require('../../models/facultyCourse');
 const Subtopic = require('./../../models/subtopic');
-
+const studentSubtopic = require('./../../models/studentSubtopic');
+const FcTest = require('./../../models/FcTest');
 const Complaint = require('./../../models/complaint');
 
 //enroll
@@ -64,6 +65,22 @@ router.get('/view', function (req, res, next) {
     });
 });
 
+//upload assignment
+/*
+router.patch('/upload/:subtopic_id', upload.single('subtopic_assignment'), function(req, res, next){
+studentSubtopic.update({_id : req.body.subtopic_id, student_id : req.userData.student_id}, {$set : {
+        subtopic_assignment_submission : req.file.originalname
+    }}).then(data=>{
+        res.status(200).json({
+            data : data
+        })
+}).catch(err=>{
+    res.status(500).json({
+        error : err
+    });
+});
+});
+*/
 //view sub courses
 router.get('/view/:course_id', function (req, res, next) {
     FacultyCourse.find({course_id: req.params.course_id}).exec().then(result => {
@@ -104,10 +121,17 @@ router.get('/subtopics/:subtopic_id', checkAuth, (req, res, next) => {
 
 //get subtopics
 router.get('/subtopic/:FC_id', checkAuth, (req, res, next) => {
+    let sub_array = [];
     FacultyCourse.find({_id : req.params.FC_id}).exec()
         .then(result => {
-            console.log(result[0].facultyCourse_subtopics);
-            res.status(200).json(result[0].facultyCourse_subtopics);
+            sub_array = result[0].facultyCourse_subtopics;
+            Subtopic.find({_id : { $in : sub_array}}).exec()
+                .then(result1 => {
+                    res.status(200).json(result1);
+                })
+                .catch(err => {
+                    res.status(500).json(err);
+                })
         })
         .catch(err => (req, res, next) => {
             res.status(500).json(err);
@@ -131,6 +155,17 @@ router.get('/enrolled', checkAuth, (req, res, next) => {
         });
 });
 
+//test
+router.get('/test/:FC_id', (req, res, next) => {
+    FcTest.find({FC_id : req.params.FC_id}).exec()
+        .then(result => {
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+
 router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
     const complaint = new Complaint({
         _id : new mongoose.Types.ObjectId(),
@@ -140,7 +175,8 @@ router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
         FC_id :  req.params.FC_id,
         complaint_date_posted : Date.now()
     });
-    complaint.save().exec()
+    complaint.save()
+        .exec()
         .then(result => {
             res.status(200).json(result);
         })
