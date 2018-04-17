@@ -140,7 +140,7 @@ router.post('/assignment/:subtopic_id', checkAuth, upload.single('subtopic_assig
     const studentSubtopic = new StudentSubtopic({
         _id : new mongoose.Types.ObjectId(),
         student_id : req.userData.student_id,
-        subtopic_id : req.params.student_id,
+        subtopic_id : req.params.subtopic_id,
         subtopic_assignment_submission : "http://192.168.137.1:3000/uploads/assignments" + req.file.originalname,
         subtopic_assignment_submission_date : Date.now(),
     });

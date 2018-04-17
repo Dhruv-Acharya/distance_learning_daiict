@@ -12,26 +12,43 @@ router.get('/view', function (req, res, next) {
         .then(result => {
             let std_id_arr = [];
             let std_name_arr = [];
+            let j = 0;
             for (let i=0; i<result.length; i++){
                 std_id_arr.push(result[i].student_id);
             }
-            console.log(result);
-            Student.find({_id : {$in : std_id_arr}}).exec().then(student_name_temp => {
-                const result_final = {};
-                for(let i=0; i<student_name_temp.length; i++) {
+            for (j = 0; j < std_id_arr.length; j++) {
+                Student.find({_id : std_id_arr[j]}).exec()
+                    .then(result_name =>{
+                        std_name_arr.push(result_name[0].student_name)
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.status(500).json(err);
+                    });
+            }
+            /*
+            Student.find({_id : {$in : std_id_arr}}).exec().then(student_name_temp => {*/
+                const result_final = [];
+                let i;
+                for(i=0; i<result.length; i++) {
                     result_final.push({
-                        student_name : student_name_temp[i].student_name,
+                        _id : result[i]._id,
+                        student_name : std_name_arr[i],
                         complaint_date_posted : result[i].complaint_date_posted,
                         complaint_title : result[i].complaint_title,
                         complaint_description : result[i].complaint_description
                     });
                 }
+                while(i<result.length){
+
+                }
                 res.status(200).json(result_final);
-                console.log(result_final)
-            })
+                console.log(result_final);
+            /*})
                 .catch(err => {
+                    console.log(err);
                     res.status(500).json(err);
-                });
+                });*/
             /*console.log(s
 }tudent_name_temp);
             if (!result.length) {
@@ -42,9 +59,10 @@ router.get('/view', function (req, res, next) {
                 complaint_date_posted : result.complaint_date_posted,
                 complaint_title : result.complaint_title,
                 complaint_description : result.complaint_description
-            });
+            });*/
         }).catch(err => {
-        res.status(500).json(err);*/
+        console.log(err);
+        res.status(500).json(err);
     });
 });
 

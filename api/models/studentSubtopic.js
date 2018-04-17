@@ -7,6 +7,7 @@ const studentSubtopicSchema = mongoose.Schema({
     subtopic_assignment_submission : String,
     subtopic_assignment_acquiredMarks :Number,
     subtopic_assignment_submission_date : Date,
+    subtopic_assignment_evaluated_date : Date,
     subtopic_completion : Boolean
 });
 

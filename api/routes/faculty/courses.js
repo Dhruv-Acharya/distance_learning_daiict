@@ -90,7 +90,7 @@ router.get('/view/:FC_id', function (req, res, next) {
         res.status(500).json(err);
     });
 });
-
+/*
 //create courses
 router.post('/create', upload.any(), function (req, res, next) {
     //console.log(req);
@@ -147,6 +147,66 @@ router.post('/create', upload.any(), function (req, res, next) {
         });
         console.log("<-_->Altair");
     aux+=2;
+    }
+});
+*/
+
+router.post('/create', checkAuth, upload.any(), function (req, res, next) {
+    //console.log(req);
+    var subtopicArray = [];
+    var i = 1;
+    var aux = 1;
+
+    var subtopics = JSON.parse(req.body.facultyCourse_subtopics);
+    var ta_list = JSON.parse(req.body.facultyCourse_ta_list);
+
+    for (var index in subtopics) {
+        var subtopicItem = new Subtopic({
+            _id: new mongoose.Types.ObjectId(),
+            subtopic_name: subtopics[index].subtopic_name,
+            subtopic_video: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux].originalname,
+            subtopic_assignment: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[aux+1].originalname,
+            subtopic_description: subtopics[index].subtopic_description,
+            subtopic_weightage: subtopics[index].subtopic_weightage,
+            subtopic_assignment_totalMarks: subtopics[index].subtopic__assignment_totalMarks
+        });
+        subtopicItem.save().then(data => {
+            console.log(data);
+            subtopicArray.push(data._id);
+            i++;
+            console.log(i);
+            if (i == subtopics.length + 1) {
+                const facultyCourse = new FacultyCourse({
+                    _id: new mongoose.Types.ObjectId(),
+                    course_id: "5ad052de844bc805288b4527",
+                    faculty_id: req.userData.faculty_id,
+                    facultyCourse_name: req.body.facultyCourse_name,
+                    facultyCourse_duration: req.body.facultyCourse_duration,
+                    facultyCourse_description: req.body.facultyCourse_description,
+                    facultyCourse_image: "http://192.168.137.1:3000/uploads/facultyCourses/" + req.files[0].originalname,
+                    facultyCourse_ta_require : req.body.facultyCourse_ta_require,
+                    facultyCourse_ta_list : ta_list,
+                    facultyCourse_prerequisites: req.body.facultyCourse_prerequisites,
+                    facultyCourse_subtopics: subtopicArray
+                });
+                console.log(facultyCourse);
+                facultyCourse.save().then(result => {
+                    console.log("saved");
+                    res.status(201).json(result);
+                }).catch(err => {
+                    console.log("failed to save, try something better next time");
+                    console.log(err);
+                    res.status(500).json({
+                        error: err,
+                        msg: "Failed to save, but you can always retry"
+                    });
+                });
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+        console.log("<-_->Altair is watching");
+        aux+=2;
     }
 });
 

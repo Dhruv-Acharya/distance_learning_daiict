@@ -11,6 +11,8 @@ const crypto=require('crypto');
 const checkAuth = require('./../middleware/check-auth');
 require('./../../env');
 
+const evaluationRoutes = require('./teachingAssistant/evaluations');
+
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, './uploads/teachingAssistant');
@@ -26,6 +28,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage:storage});
 const Teaching_Assistant = require('../models/teachingAssistant');
+
+router.use('/evaluation',evaluationRoutes);
 
 //add TA
 router.post('/add', (req, res, next) => {
@@ -76,7 +80,7 @@ router.get('/view', checkAuth, (req, res,next)=>{
 router.patch('/update',checkAuth, upload.single('ta_photo') , (req, res, next) => {
             Teaching_Assistant.update({_id : req.userData.ta_id}, {$set : {
                     ta_name: req.body.ta_name,
-                    ta_photo: "http://192.168.137.1:3000/uploads/teachingAssistant" + req.file.originalname,
+                    ta_photo: "http://192.168.137.1:3000/uploads/teachingAssistant/" + req.file.originalname,
                     ta_email: req.body.ta_email,
                     ta_contact_number: req.body.ta_contact_number,
                     ta_educational_details: req.body.ta_educational_details
