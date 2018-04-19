@@ -16,6 +16,7 @@ const studentSubtopic = require('./../../models/studentSubtopic');
 const FcTest = require('./../../models/FcTest');
 const Complaint = require('./../../models/complaint');
 const feedback = require('./../../models/feedback');
+const Student = require('./../../models/student');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -189,15 +190,16 @@ router.get('/enrolled', checkAuth, (req, res, next) => {
         });
 });
 
-//test
-router.get('/test/:FC_id', checkAuth, (req, res, next) => {
-    FcTest.find({FC_id : req.params.FC_id}).exec()
-        .then(result => {
-            res.status(200).json(result);
-        })
-        .catch(err => {
-            res.status(500).json(err);
-        });
+//test submit
+router.patch('/test/submit/:FC_id', checkAuth, (req, res, next) => {
+    Student.find()
+    const temp = {};
+    Enrollment.update({student_id : req.userData.student_id},{ $set :{
+        enrollment_course : req.body.result,
+    }}).exec()
+        .then()
+        .catch();
+
 });
 
 router.post('/complain/:FC_id', checkAuth, (req, res, next) => {

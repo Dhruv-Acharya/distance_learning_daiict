@@ -5,7 +5,7 @@ const enrollmentSchema =mongoose.Schema({
     enrollment_course:[{
         FC_id:mongoose.Schema.ObjectId,
         date:Date,
-
+        result : Number
     }]
 });
 module.exports =  mongoose.model('enrollment', enrollmentSchema);

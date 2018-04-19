@@ -6,6 +6,7 @@ const checkAuth = require('./../../middleware/check-auth');
 const FacultyCourse = require('../../models/facultyCourse');
 const studentSubtopic = require('../../models/studentSubtopic');
 const Subtopic = require('../../models/subtopic');
+const Student = require('../../models/student');
 
 //views FC
 router.get('/view', checkAuth, function (req, res, next) {
@@ -60,13 +61,48 @@ router.get('/subtopics/view/:FC_id', checkAuth, function (req, res, next) {
 router.get('/student/:subtopic_id', checkAuth, function (req, res, next) {
     studentSubtopic.find({
         subtopic_id : req.params.subtopic_id,
-        student_assignment: {$exists: false}
+        subtopic_assignment_submission: {$exists: true}
     }).exec().then(result => {
-        if (!result.length)
+
+        let std_id_arr = [];
+        let std_name_arr = [];
+        let j = 0;
+        for (let i=0; i<result.length; i++){
+            std_id_arr.push(result[i].student_id);
+        }
+        for (j = 0; j < std_id_arr.length; j++) {
+            Student.find({_id : std_id_arr[j]}).exec()
+                .then(result_name =>{
+                    std_name_arr.push(result_name[0].student_name)
+                })
+                .catch(err => {
+                    console.log(err);
+                    res.status(500).json(err);
+                });
+        }
+        /*
+        Student.find({_id : {$in : std_id_arr}}).exec().then(student_name_temp => {*/
+        const result_final = [];
+        let i;
+        for(i=0; i<result.length; i++) {
+            result_final.push({
+                _id : result[i]._id,
+                student_name : std_name_arr[i],
+                subtopic_assignment_submission : result[i].subtopic_assignment_submission,
+                subtopic_assignment_submission_date : result[i].subtopic_assignment_submission_date
+            });
+        }
+        while(i<result.length){
+
+        }
+        res.status(200).json(result_final);
+        console.log(result_final);
+
+        /*if (!result.length)
             res.status(404).json({
                 message: "data not found"
             });
-        else res.status(200).json(result);
+        else res.status(200).json(result);*/
     }).catch(err => {
         res.status(500).json(err);
     });

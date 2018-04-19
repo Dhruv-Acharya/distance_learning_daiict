@@ -45,7 +45,7 @@ router.get('/subtopics/view/:FC_id', checkAuth, function (req, res, next) {
     let i;
     FacultyCourse.find({_id: req.params.FC_id}).exec()
         .then(result => {
-            //console.log(result);
+            console.log(result);
             subtopic_list = result[0].facultyCourse_subtopics;
             //console.log(subtopic_list);
             /*for (i = 0; i < result.length; i++) {
@@ -74,12 +74,11 @@ router.get('/subtopics/view/:FC_id', checkAuth, function (req, res, next) {
 
 });
 
-
 //views Student details of subtopics of FCs
 router.get('/student/:subtopic_id', checkAuth, function (req, res, next) {
     studentSubtopic.find({
         subtopic_id : req.params.subtopic_id,
-        student_assignment: {$exists: false}
+        subtopic_assignment_submission: {$exists: true}
     }).exec().then(result => {
         if (!result.length)
             res.status(404).json({
