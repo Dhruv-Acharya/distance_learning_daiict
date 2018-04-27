@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const checkAuth = require('./../middleware/check-auth');
 
 const Faculty = require('../models/faculty');
 
@@ -30,7 +31,7 @@ router.use('/course',courseRoutes);
 router.use('/test',testRoutes);
 router.use('/evaluation',evaluationRoutes);
 
-router.post('/login',function(req,res,next){
+router.post('/login',(req,res,next) => {
     Faculty.find({faculty_email:req.body.faculty_email})
        .exec()
        .then(data => {
@@ -71,7 +72,24 @@ router.post('/login',function(req,res,next){
         });
 });
 
-router.patch('/update/:faculty_id', upload.single('faculty_photo'), (req, res, next) => {
+router.get('/view', checkAuth, (req, res, next) => {
+    Faculty.find({_id : req.userData.faculty_id})
+        .exec()
+        .then(result => {
+            if(result.length >= 0){
+                res.status(200).json(result);
+            }else {
+                res.status(404).json({
+                    message: "No entries found for the ID!"
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+});
+
+router.patch('/update/:faculty_id', checkAuth, upload.single('faculty_photo'), (req, res, next) => {
             
             Faculty.update({_id: req.params.faculty_id}, {$set: {
                 faculty_name: req.body.faculty_name,
