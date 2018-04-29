@@ -30,7 +30,7 @@ const upload = multer({ storage: storage });
 
 //enroll
 router.post('/enrollment/:FC_id', checkAuth,(req, res, next) => {
-    Enrollment.find({student_id:req.params.student_id})
+    Enrollment.find({student_id:req.userData.student_id})
         .exec()
         .then(data=>{
             if(!data.length){
@@ -51,14 +51,26 @@ router.post('/enrollment/:FC_id', checkAuth,(req, res, next) => {
                         res.status(500).json(err);
                     });
             }else{
-                const enrollment_course = data.enrollment_course;
+                console.log("else");
+
+                var enrollment_course = data[0].enrollment_course;
                 enrollment_course.push({
                     FC_id:req.params.FC_id,
                     date:Date.now()
                 });
-                Enrollment.update({student_id:req.params.student_id},{$set: {
-                        enrollment_course:enrollment_course
-                    }});
+                console.log("scope");
+                console.log(enrollment_course);
+                console.log("scope");
+                Enrollment.update({student_id:req.userData.student_id},{$set: {
+                        enrollment_course : enrollment_course
+                    }}).then(data2=>{
+                        console.log(data2);
+                        console.log("updated");
+                        res.status(200).json({message : "success"});
+                }).catch(error2=>{
+                    console.log("error");
+                    res.status(500).json({error: error2});
+                });
             }
         })
         .catch(err => res.status(500).json({
@@ -99,7 +111,7 @@ studentSubtopic.update({_id : req.body.subtopic_id, student_id : req.userData.st
 */
 
 //view sub courses
-router.get('/view/:course_id', function (req, res, next) {
+router.get('/viewFC/:course_id', function (req, res, next) {
     FacultyCourse.find({course_id: req.params.course_id}).exec().then(result => {
         if (!result.length) res.status(404).json({
             message: "data not found"
@@ -178,28 +190,117 @@ router.get('/enrolled', checkAuth, (req, res, next) => {
     let FC_Array =[];
     Enrollment.find({student_id : req.userData.student_id}).exec()
         .then(result => {
-            for (let i = 0; i < result.length; i++) {
-                FC_Array.push((result[i].enrollment_course[0].FC_id));
-                console.log(result[i].enrollment_course[0].FC_id);
-            }console.log(FC_Array);
-            FacultyCourse.find({_id : { $in : FC_Array}}).exec()
-                .then(result1 => {
-                    res.status(200).json(result1);
-                    console.log(result1);
-                });
+            console.log(result[0].enrollment_course.length);
+            for (let i = 0; i < result[0].enrollment_course.length; i++) {
+
+                FC_Array.push((result[0].enrollment_course[i].FC_id));
+
+                if(i === result[0].enrollment_course.length-1) {
+                    console.log(FC_Array);
+                    FacultyCourse.find({_id : { $in : FC_Array}}).exec()
+                        .then(result1 => {
+                            res.status(200).json(result1);
+                            //console.log(result1);
+                        }).catch(err2=>{
+                            res.status(500).json({error:err2});
+                    });
+                }
+            }
+
         });
 });
 
-//test submit
-router.patch('/test/submit/:FC_id', checkAuth, (req, res, next) => {
-    Student.find()
-    const temp = {};
-    Enrollment.update({student_id : req.userData.student_id},{ $set :{
-        enrollment_course : req.body.result,
-    }}).exec()
-        .then()
-        .catch();
+// student takes test
+router.get('/viewTest/:FC_id', (req, res, next) => {
+    var questionsToSend = [];
+    var count = 0;
+    FcTest.find({ FC_id: req.params.FC_id }).exec().then(data => {
+        if (data[0] === undefined) {
+            res.status(404).json({
+                message: "Woooo....no tests to view yet"
+            });
 
+        }
+        else {
+            questions = data[0].FcTest_questions;
+            FcTestQuestion.find({ _id: { $in: questions } }).exec()
+                .then(result1 => {
+                    console.log(result1);
+
+                    for (index in result1) {
+
+                        var answers = result1[index].FcTestQuestion_answers;
+                        console.log(answers);
+                        var answersToSend = [];
+
+                        for (var index2 = 0; index2 < answers.length; index2++) {
+                            console.log(answers[index2]);
+                            if (index2 == result1[index].FcTestQuestion_answer) {
+                                answersToSend.push({
+                                    text: answers[index2],
+                                    correct: true
+                                });
+                            }
+                            else {
+                                answersToSend.push({
+                                    text: answers[index2]
+                                });
+                            }
+                            // console.log(answersToSend);
+                        }
+
+                        questionsToSend.push({
+                            FcTestQuestion_text: result1[index].FcTestQuestion_text,
+                            FcTestQuestion_answers: answersToSend
+                        });
+
+                    }
+                    //  console.log(questionsToSend);
+                    res.status(200).json(questionsToSend);
+                })
+                .catch(err => {
+                    res.status(500).json(err);
+                })
+
+        }
+    }).catch(err2 => {
+        res.status(500).json({
+            error: err2,
+            message: "Your request failed with no seeming reason, try something better next time"
+        });
+
+    });
+
+});
+
+//students submits test
+router.patch('test/submit/:FC_id', function (req, res, next) {
+    Enrollment.find({ student_id: req.userData.student_id, FC_id: req.params.FC_id }).exec().then(data => {
+        marks = [];
+        marks = data[0].enrollment_course;
+        marks.push( [{
+            FC_id: mongoose.Schema.ObjectId,
+            date: Date.now(),
+            result: req.body.result
+        }]);
+        Enrollment.update({ student_id: req.userData.student_id, FC_id: req.body.FC_id }, { $set : {
+                enrollment_course: marks
+            }}).then(data2 => {
+            res.status(200).json({
+                message : "test submitted successfully"
+            });
+        }).catch(err2 => {
+            res.status(500).json({
+                message : "Something went wrong",
+                error : err2
+            });
+        });
+    }).catch(err => {
+        res.status(500).json({
+            message : "Something went wrong",
+            error : err
+        });
+    });
 });
 
 router.post('/complain/:FC_id', checkAuth, (req, res, next) => {
