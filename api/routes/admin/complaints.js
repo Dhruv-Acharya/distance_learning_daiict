@@ -10,40 +10,59 @@ router.get('/view', function (req, res, next) {
     Complaint.find()
         .exec()
         .then(result => {
+            console.log("Bhoot");
             let std_id_arr = [];
             let std_name_arr = [];
-            let j = 0;
+            let x = 0;
+            let flag = false;
+            const result_final = [];
             for (let i=0; i<result.length; i++){
                 std_id_arr.push(result[i].student_id);
             }
-            for (j = 0; j < std_id_arr.length; j++) {
+            for (j = 0; j < std_id_arr.length; j++) { //do not use $in
                 Student.find({_id : std_id_arr[j]}).exec()
                     .then(result_name =>{
-                        std_name_arr.push(result_name[0].student_name)
+                        console.log("Hello");
+                        //std_name_arr.push(result_name[0].student_name);
+                        result_final.push({
+                            _id : result[0]._id,
+                            student_name : result_name[0].student_name,
+                            complaint_date_posted : result[0].complaint_date_posted,
+                            complaint_title : result[0].complaint_title,
+                            complaint_description : result[0].complaint_description
+                        });
+                        x++;
+                        console.log(flag+" "+x + " "+ std_name_arr.length);
+                        if(x>=std_name_arr.length){
+                            flag = true;
+                            console.log(flag+" "+x + " "+ std_name_arr.length);
+                        }
                     })
                     .catch(err => {
                         console.log(err);
                         res.status(500).json(err);
                     });
             }
+            while (flag === false) {
+            }
+            console.log(result_final);
+            /*while(x<std_name_arr.length){
+                console.log(232);
+            }
             /*
             Student.find({_id : {$in : std_id_arr}}).exec().then(student_name_temp => {*/
-                const result_final = [];
+            /*console.log(std_name_arr);
+
                 let i;
                 for(i=0; i<result.length; i++) {
-                    result_final.push({
-                        _id : result[i]._id,
-                        student_name : std_name_arr[i],
-                        complaint_date_posted : result[i].complaint_date_posted,
-                        complaint_title : result[i].complaint_title,
-                        complaint_description : result[i].complaint_description
-                    });
+
                 }
                 while(i<result.length){
 
                 }
-                res.status(200).json(result_final);
-                console.log(result_final);
+            //console.log(result_final);*/
+
+
             /*})
                 .catch(err => {
                     console.log(err);

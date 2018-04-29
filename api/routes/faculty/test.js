@@ -4,14 +4,14 @@ const mongoose = require('mongoose');
 const FcTest = require('./../../models/FcTest');
 const FcTestQuestion = require('./../../models/FcTestQuestion');
 
-router.post('/create', (req, res, next) => {
+router.post('/create/:FC_id', (req, res, next) => {
     let questionArray = [];
     var count=0;
     var fctestque = JSON.parse(req.body.FcTest_questions);
     for(que in fctestque) {
         
         const question = new FcTestQuestion({
-            _id : new mongoose.Schema.ObjectId(),
+            _id : new mongoose.Types.ObjectId(),
             FcTestQuestion_text : fctestque[que].FcTestQuestion_text,
             FcTestQuestion_type : fctestque[que].FcTestQuestion_type,
             FcTestQuestion_answers : fctestque[que].FcTestQuestion_answers,
@@ -21,11 +21,11 @@ router.post('/create', (req, res, next) => {
             .then(data=>{
                 questionArray.push(data._id);
                 count++;
-                if(count==fctestque.length)
+                if(count===fctestque.length)
                 {
                     fctest = new FcTest({
-                        _id: new mongoose.Schema.ObjectId(),
-                        FC_id : req.body.FC_id,
+                        _id: new mongoose.Types.ObjectId(),
+                        FC_id : req.params.FC_id,
                         FcTest_questions : questionArray
                     });
                     fctest.save().then(data=>{
@@ -61,7 +61,7 @@ router.patch('/update/:FcTest_id', (req, res, next) => {
             .then(data=>{
                 questionArray.push(data._id);
                 count++;
-                if(count==fctestque.length)
+                if(count===fctestque.length)
                 {
                     FcTest.update({_id : req.params.FcTest_id},{$set : {
                         FcTest_questions : questionArray
